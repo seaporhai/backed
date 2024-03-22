@@ -1,6 +1,9 @@
 const userModel = require("../models/users.model");
 
 export class userRepo {
+  static showStudentById(id: any) {
+      throw new Error("Method not implemented.");
+  }
   //search all
   async searchUser() {
     return await userModel.find({});

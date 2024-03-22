@@ -10,7 +10,7 @@ import requestTimeMiddleware from "./middlewares/requestTime";
 import errorHandler from "./middlewares/errorHandler";
 
 dotenv.config();
-const app: Express = express();
+export const app = express();
 
 // Global Middleware
 app.use(express.json());
@@ -34,9 +34,7 @@ connectToDatabase();
 
 // Error handling middleware
 app.use(errorHandler);
-
-
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`[Server] is running on port ${PORT} and PATH ${PATH}`);
-});
+// app.listen(PORT, () => {
+//   console.log(`[Server] is running on port ${PORT} and PATH ${PATH}`);
+// });

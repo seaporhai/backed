@@ -4,11 +4,12 @@
   "description": "",
   "main": "server.ts",
   "scripts": {
-    "test": " jest --detectOpenHandles",
+    "test": " jest --detectOpenHandles --watchAll",
     "build": "npm run generate-swagger && npx tsc",
     "start": "node dist/server.js",
     "dev": "nodemon  src/server.ts",
-    "generate-swagger": "tsoa spec"
+    "generate-swagger": "tsoa spec",
+    "compile": "tsc"
   },
   "nodemonConfig": {
     "watch": [
@@ -21,12 +22,14 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/jest": "^29.5.12",
     "cors": "^2.8.5",
     "cross-env": "^7.0.3",
     "dotenv": "^16.4.5",
     "express": "^4.18.3",
     "express-swagger-generator": "^1.1.17",
     "mongodb": "^6.5.0",
+    "mongodb-memory-server": "^9.1.7",
     "mongoose": "^8.2.1",
     "morgan": "^1.10.0",
     "swagger-ui-express": "^5.0.0",
@@ -36,9 +39,10 @@
   "devDependencies": {
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
-    "@types/jest": "^29.5.12",
+    "@types/mocha": "^10.0.6",
+    "@types/mongoose": "^5.11.97",
     "@types/morgan": "^1.9.9",
-    "@types/node": "^20.11.27",
+    "@types/node": "^20.11.30",
     "@types/supertest": "^6.0.2",
     "@types/swagger-ui-express": "^4.1.6",
     "concurrently": "^8.2.2",
