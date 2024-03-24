@@ -1,7 +1,9 @@
+import { Mock } from "node:test";
 import { userRepo } from "../repository/userRepo";
 import { User } from "../types/users";
 export class userService {
   static DeleteUser: any;
+    getUserById: Mock<string,string, any>;
   static updateUser(id: string, data: User) {
     throw new Error("Method not implemented.");
   }
