@@ -11,8 +11,8 @@ describe("errorHandler middleware", () => {
   beforeEach(() => {
     req = {};
     res = {
-    status: jest.fn().mockReturnThis(),
-    json: jest.fn(),
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
     };
     next = jest.fn();
   });
@@ -23,6 +23,18 @@ describe("errorHandler middleware", () => {
     errorHandler(mockError, req as Request, res as Response, next);
 
     expect(res.status).toHaveBeenCalledWith(StatusCode.BadRequest);
-    // expect(res.json).toHaveBeenCalledWith(mockError.serializeErrorOutput());
+    expect(res.json).toHaveBeenCalledWith({
+      message: mockError.message,
+      statusCode: mockError.statusCode,
+    });
+  });
+
+  it("should create a valid API Error", () => {
+    const mockError = new BaseCustomError("Test Error", StatusCode.BadRequest);
+
+    expect(mockError instanceof BaseCustomError).toBe(true);
+    expect(mockError.statusCode).toBe(StatusCode.BadRequest)
+    expect(mockError.message).toBe("Test Error");
+    expect(mockError.name).toBe("BaseCustomError");
   });
 });

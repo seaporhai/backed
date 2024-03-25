@@ -1,6 +1,9 @@
 const userModel = require("../models/users.model");
 
 export class userRepo {
+  static createUser(arg0: { name: string; age: number; }) {
+    throw new Error("Method not implemented.");
+  }
   static showStudentById(id: any) {
       throw new Error("Method not implemented.");
   }

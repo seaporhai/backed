@@ -17,16 +17,12 @@ describe("validateInput middleware", () => {
       const req: Request = {
         body: { name: "Mee Reak", age: 20 },
       } as Request;
-
       const schema: ZodSchema = object({
         name: string(),
         age: number(),
       });
-
       const middleware = usevalidation(schema); // Create the middleware function
-
       middleware(req, {} as Response, next); // Call the middleware function with a mock response
-
       expect(next).toHaveBeenCalled(); // Ensure next() was called
       expect(next).toHaveBeenCalledTimes(1); // Ensure next() was called only once
     });
