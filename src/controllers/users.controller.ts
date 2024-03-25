@@ -3,6 +3,7 @@ import { User } from "../types/users";
 import { BaseCustomError } from "../utils/baseCustome";
 import { userService } from "../Service/userService";
 import { StatusCode } from "../utils/statuscode";
+import { OK } from "zod";
 
 export const usersControllers = {
   getUsers: async (
@@ -69,7 +70,10 @@ export const usersControllers = {
       age: req.body.age,
     };
     const add = await Post.addUser(userData);
-    res.json({ add });
+    res.status(StatusCode.Created).json({
+      message: "POST success",
+      data: add,
+    });
   },
 
   updateUser: async (

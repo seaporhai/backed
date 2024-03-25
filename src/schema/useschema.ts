@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-const UseSchema = z.object({
+export const UseSchema = z.object({
   username: z
     .string()
     .min(3, "must be more than3")
@@ -11,4 +11,3 @@ const UseSchema = z.object({
     .max(30, "please be lower than  or equal to 30 years old"),
 });
 
-export { UseSchema };

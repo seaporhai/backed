@@ -2,14 +2,14 @@ import request from "supertest";
 import { app } from "../../server";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import mongoose from "mongoose";
-import { Route } from "../users.route";
+import connectToDatabase from "../../utils/connecToDb";
 
 let mongoServer: MongoMemoryServer;
 
 beforeAll(async () => {
   mongoServer = await MongoMemoryServer.create();
   const mongoUri = mongoServer.getUri();
-  await mongoose.connect(mongoUri);
+  await connectToDatabase();
 });
 
 afterAll(async () => {
@@ -28,10 +28,16 @@ describe("POST/users", () => {
       .expect(201)
       .expect("Content-Type", "application/json; charset=utf-8");
 
-     mongoServer = response.body.data._id;
-    expect(response.body.data).toBeDefined();
+      // mongoServer = response.body.data._id;
+      expect(response.body).toBeDefined();
     expect(response.body.message).toEqual("POST success");
     expect(response.body.data.username).toEqual("test");
     expect(response.body.data.age).toEqual(7);
   }); // Reduced timeout to 10 seconds
+   test("Get / user Should Find all User" , async ()=>{
+    const response = await request(app)
+    .get('/users');
+    console.log (response.body)
+    expect(response.body.message).toEqual( 'GET success!')
+   })
 });

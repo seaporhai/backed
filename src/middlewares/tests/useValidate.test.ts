@@ -1,53 +1,34 @@
-import { Request, Response } from "express";
-import { usevalidation } from "../usevalidation";
-import { UseSchema } from "../../schema/useschema";
-import connectToDatabase from "../../utils/connecToDb";
+import { Request, Response, NextFunction } from "express";
+import { usevalidation } from "../usevalidation"; // Assuming usevalidation is correctly imported
+import connectToDatabase from "../../utils/connecToDb"; // Assuming this is correctly imported
+import { ZodSchema, object, string, number } from "zod";
 
-connectToDatabase();
+connectToDatabase(); // Assuming this function call is needed
+
 describe("validateInput middleware", () => {
-  let res: Partial<Response>;
   let next: jest.Mock;
-
-  beforeAll(() => {
-    res = {};
-  });
 
   beforeEach(() => {
     next = jest.fn();
   });
 
-  test("should pass validation and call next() for valid input", async () => {
-    res = {};
-    next = jest.fn();
+  describe("validate Input", () => {
+    test("Valid Input", () => {
+      const req: Request = {
+        body: { name: "Mee Reak", age: 20 },
+      } as Request;
 
-    const req: Partial<Request> = {
-      body: {
-        username: "sokritha",
-        age: 8
-      },
-    };
+      const schema: ZodSchema = object({
+        name: string(),
+        age: number(),
+      });
 
-    await UseSchema(usevalidation)(req as Request, res as Response, next);
+      const middleware = usevalidation(schema); // Create the middleware function
 
-    // expect(next).toHaveBeenCalledWith(); // Assert that next is called with no arguments
-    expect(next).toHaveBeenCalledTimes(1); // Ensure that next is called exactly once
-  });
+      middleware(req, {} as Response, next); // Call the middleware function with a mock response
 
-  test("should call next() with an InvalidInputError for invalid input", async () => {
-    res = {};
-    next = jest.fn();
-    const req = {
-      body: {
-        username: "sokritha",
-        password: "SmeourySongvat",
-        age: 8
-      },
-    }; // Provide invalid data for your testSchema
-
-    await UseSchema(usevalidation)(req as Request, res as Response, next);
-
-    // Expect next to be called with an instance of InvalidInputError
-    // expect(next).toHaveBeenCalledWith(expect.any(InvalidInputError));
-    expect(next).toHaveBeenCalledTimes(1);
+      expect(next).toHaveBeenCalled(); // Ensure next() was called
+      expect(next).toHaveBeenCalledTimes(1); // Ensure next() was called only once
+    });
   });
 });

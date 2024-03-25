@@ -4,8 +4,7 @@ import { validateMongooseId } from "../middlewares/mongoose";
 import express from "express";
 import { UseSchema } from "../schema/useschema";
 import { usevalidation } from "../middlewares/usevalidation"; // Corrected spelling
-import { ZodSchema, object } from "zod";
-import mongoose from "mongoose";
+import { ZodSchema } from "zod";
 
 const Route: Router = express.Router(); // Set type of Route as Router
 const schema: ZodSchema = UseSchema; // Set type of schema as object
