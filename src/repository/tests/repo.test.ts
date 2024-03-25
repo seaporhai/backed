@@ -16,7 +16,7 @@ afterAll(async () => {
   await mongoose.disconnect();
   await mongoServer.stop();
 });
-    
+
 describe("UserRepo", () => {
   let newUserRepo: userRepo;
 
@@ -83,5 +83,24 @@ describe("UserRepo", () => {
       expect(newUser._id).toBeDefined();
       expect(newUser.username).toEqual(student.username);
     });
+  });
+//shopw student by ID
+  test("Show student by id", async () => {
+    const student = {
+      username: "John Doe",
+      age: 20,
+    };
+
+    //add that student to database
+    const newUser = await userRepo.adduser(student);
+
+    //find that student
+    const findUser = userRepo.showStudentById(newUser._id);
+
+    // Assertions;
+    expect(findUser).toBeDefined();
+    expect(findUser?.id).toBe(newUser.id);
+    expect(findUser?.username).toBe(student.username);
+    expect(findUser?.age).toBe(student.age);
   });
 });
