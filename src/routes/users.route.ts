@@ -63,7 +63,10 @@ Route.post(
     try {
       const userController = new UsersController();
       const newUser = await userController.createStudent(req.body);
-      res.status(StatusCode.Created).send({ users: { newUser } });
+      res.status(StatusCode.Created).json({
+        message: "POST success",
+        user: newUser
+      });
     } catch (error) {
       _next(error);
     }
@@ -100,8 +103,8 @@ Route.delete(
       const { id } = req.params;
       const userController = new UsersController();
       const response = await userController.deleteUser(id);
-      res.status(StatusCode.NoContent).json({
-        message: "Delete successful!",
+      res.status(StatusCode.OK).json({
+        message: "Delete success",
         error: false,
         data: response,
       });

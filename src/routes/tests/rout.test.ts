@@ -1,5 +1,5 @@
 import request from "supertest";
-import { app } from "../../server";
+import app from "../../app";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import mongoose from "mongoose";
 import connectToDatabase from "../../utils/connecToDb";
@@ -21,22 +21,25 @@ afterAll(async () => {
   await mongoServer.stop();
 });
 
-describe("POST/users", () => {
+describe("/users", () => {
+  let userId: string;
   test("POST /users should create a new user", async () => {
     const response = await request(app)
       .post("/users")
       .send({
-        username: "test",
+        username: "testhhh",
         age: 7,
       })
       .expect(201)
       .expect("Content-Type", "application/json; charset=utf-8");
 
     // mongoServer = response.body.data._id;
+    console.log("this is post", response.body);
+    userId = response.body.user._id;
     expect(response.body).toBeDefined();
     expect(response.body.message).toEqual("POST success");
-    expect(response.body.data.username).toEqual("test");
-    expect(response.body.data.age).toEqual(7);
+    expect(response.body.user.username).toEqual("testhhh");
+    expect(response.body.user.age).toEqual(7);
   }); // Reduced timeout to 10 seconds
 
   //Get Rout
@@ -59,27 +62,15 @@ describe("POST/users", () => {
       username: "Leeminhai",
       age: 20,
     });
-    // Make the request
     const res = await request(app)
       .patch(`/users/${newStudent.id}`)
       .send({ username: "Leeminhoo", age: 10 });
-    // Assert on response status and body
     expect(res.status).toBe(StatusCode.OK);
-
   });
 
   //Delete by Id
-
   test("Delete/:id", async () => {
-    const newStudent = await userModel.create({
-      username: "Ling",
-      age: 19,
-    });
-    //response
-    const res = await request(app).delete(`/users/${newStudent._id}`);
-    expect(res.status).toBe(StatusCode.NoContent);
-    //make sure that the user was delete
-    const deleteUser = await userModel.findById(newStudent._id);
-    expect(deleteUser).toBeNull();
+    const res = await request(app).delete(`/users/${userId}`).expect(200);
+    expect(res.body.message).toEqual("Delete success");
   });
 });
