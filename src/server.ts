@@ -2,12 +2,12 @@ import express, { Express, NextFunction, Request, Response } from "express";
 import dotenv from "dotenv";
 import { Route } from "./routes/users.route";
 import cors from "cors";
-import swaggerUi from "swagger-ui-express";
 import morgan from "morgan";
-import { swaggerDocument } from "./utils/swagger";
 import connectToDatabase from "./utils/connecToDb";
 import requestTimeMiddleware from "./middlewares/requestTime";
 import errorHandler from "./middlewares/errorHandler";
+import swaggerUi from "swagger-ui-express";
+import * as swaggerDocument from "../public/swagger.json";
 
 dotenv.config();
 export const app = express();
@@ -27,14 +27,13 @@ app.use(PATH, Route);
 app.all("*", (req: Request, res: Response, _next: NextFunction) => {
   _next(new Error(`page could be not found!`));
 });
-
+// Error handling middleware
+app.use(errorHandler);
+const PORT = process.env.PORT;
 
 // Connect to database
 connectToDatabase();
 
-// Error handling middleware
-app.use(errorHandler);
-const PORT = process.env.PORT || 3000;
-// app.listen(PORT, () => {
-//   console.log(`[Server] is running on port ${PORT} and PATH ${PATH}`);
-// });
+app.listen(PORT, () => {
+  console.log(`[Server] is running on port ${PORT} and PATH ${PATH}`);
+});

@@ -3,114 +3,97 @@ import { User } from "../types/users";
 import { BaseCustomError } from "../utils/baseCustome";
 import { userService } from "../Service/userService";
 import { StatusCode } from "../utils/statuscode";
-import { OK } from "zod";
+import { Post, Get, Route, Patch, Delete, Body, Path } from "tsoa";
+import { string } from "zod";
 
-export const usersControllers = {
-  getUsers: async (
-    req: Request,
-    res: Response,
-    _next: NextFunction
-  ): Promise<void> => {
+export interface user {
+  username: string;
+  age: number;
+}
+
+@Route("users")
+export class UsersController {
+  private userService: userService;
+
+  constructor() {
+    this.userService = new userService();
+  }
+  @Get("/")
+  public async getUsers(): Promise<any> {
     try {
-      const UserService = new userService();
-      const searchUser = await UserService.searchUser();
-      if (!searchUser) {
-        throw new Error("No user found!");
-      }
-      res.status(StatusCode.OK).json({
-        message: "GET success!",
-        data: searchUser,
-      });
-      // Log user request time
+      const searchUser = await this.userService.searchUser();
+
+      return searchUser;
     } catch (error: any) {
-      _next(new BaseCustomError(error.message, StatusCode.NotFound));
+      throw error;
     }
-  },
+  }
 
-  getUserById: async (
-    req: Request,
-    res: Response,
-    _next: NextFunction
-  ): Promise<void> => {
+  //get user by thier id
+  @Get("/:id")
+  public async GetUserById(@Path() id: string): Promise<any> {
     try {
-      const UserService = new userService();
-      const { id } = req.params;
-      const userId = await UserService.SearchId(id);
-      if (!userId) {
-        throw new Error("User not found");
-      } else {
-        res.status(StatusCode.OK).json({ userId });
-      }
+      const user = await this.userService.SearchId(id);
+
+      return user;
     } catch (error: any) {
-      _next(new BaseCustomError(error.message, StatusCode.NotFound));
+      throw error;
     }
-  },
+  }
 
-  createUsers: async (
-    req: Request,
-    res: Response,
-    _next: NextFunction
-  ): Promise<void> => {
-    // try {
-    //   const UserService = new userService();
-    //   const userData: User = {
-    //     username: req.body.username,
-    //     age: req.body.age,
-    //   };
-    //   const user = await UserService.a  ddUser(userData);
-    //   res.json(user);
-    // } catch (error) {
-    //   _next(new Error("Internal Server Error"));
-    // }
+  // Create the user
+  @Post("/")
+  public async createStudent(@Body() requestBody: user): Promise<void> {
+    const { username, age } = requestBody;
 
-    const Post = new userService();
-
-    const userData: User = {
-      username: req.body.username,
-      age: req.body.age,
-    };
-    const add = await Post.addUser(userData);
-    res.status(StatusCode.Created).json({
-      message: "POST success",
-      data: add,
-    });
-  },
-
-  updateUser: async (
-    req: Request,
-    res: Response,
-    _next: NextFunction
-  ): Promise<void> => {
     try {
-      const UserService = new userService();
-      const { id } = req.params;
-      const data: User = {
-        username: req.body.username,
-        age: req.body.age,
-      };
-      const updated = await UserService.updateUser(id, data);
-      res.json(updated);
-    } catch (error) {
-      _next(new Error("Internal Server Error"));
-    }
-  },
-
-  deleteUser: async (
-    req: Request,
-    res: Response,
-    _next: NextFunction
-  ): Promise<void> => {
-    try {
-      const UserService = new userService();
-      const { id } = req.params;
-      const deleteUser = await UserService.DeleteUser(id);
-      res.json({
-        message: "Delete successful!",
-        error: false,
-        data: deleteUser,
+      const student = await this.userService.addUser({
+        username,
+        age,
       });
+      return student;
     } catch (error) {
-      _next(new Error("Internal Server Error"));
+      throw error;
     }
-  },
-};
+  }
+
+  //Update the use using the ID
+  // @Patch("/id")
+  // public updateUser = async (
+  //   req: Request,
+  //   res: Response,
+  //   next: NextFunction
+  // ): Promise<void> => {
+  //   try {
+  //     const { id } = req.params;
+  //     const data: User = {
+  //       username: req.body.username,
+  //       age: req.body.age,
+  //     };
+  //     const updated = await this.userService.updateUser(id, data);
+  //     res.status(StatusCode.OK).json(updated);
+  //   } catch (error: any) {
+  //     next(new Error("Internal Server Error"));
+  //   }
+  // };
+
+  //Delete User by thier Id
+  // @Delete("/id")
+  // public deleteUser = async (
+  //   req: Request,
+  //   res: Response,
+  //   next: NextFunction
+  // ): Promise<void> => {
+  //   try {
+  //     const { id } = req.params;
+  //     const deleteUser = await this.userService.DeleteUser(id);
+  //     res.status(StatusCode.NoContent).json({
+  //       message: "Delete successful!",
+  //       error: false,
+  //       data: deleteUser,
+  //     });
+  //   } catch (error: any) {
+  //     next(new Error("Internal Server Error"));
+  //   }
+  // };
+}

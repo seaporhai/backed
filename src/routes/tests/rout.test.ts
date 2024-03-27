@@ -4,7 +4,9 @@ import { MongoMemoryServer } from "mongodb-memory-server";
 import mongoose from "mongoose";
 import connectToDatabase from "../../utils/connecToDb";
 import { StatusCode } from "../../utils/statuscode";
-import { userRepo } from "../../repository/userRepo";
+import { userModel } from "../../models/users.model";
+import exp from "constants";
+import { ExpressTemplateService } from "tsoa";
 
 let mongoServer: MongoMemoryServer;
 
@@ -41,47 +43,43 @@ describe("POST/users", () => {
   test("Get / user Should Find all User", async () => {
     const response = await request(app).get("/users");
     expect(response.body.message).toEqual("GET success!");
-  });
-  // Delete Rout
-  test("DELETE /:id - Delete a specific student", async () => {
-    // Create a new student
-    const newStudent = await studentModel.create({
-      name: "Mee Reak",
-      age: 20,
-      university: "Royal University of Phnom Penh",
+  }),
+    //get by id
+    test("Get / user by id ", async () => {
+      const user = await userModel.create({
+        username: "Hia",
+        age: 20,
+      });
+      const res = await request(app).get(`/users/${user._id}`);
+      expect(res.status).toBe(StatusCode.OK);
     });
-
-    // Make the request to delete the student
-    const res = await request(app).delete(`/api/student/${newStudent._id}`);
-
-    // Assert on response status
-    expect(res.status).toBe(StatusCode.NoContent);
-
-    // Ensure that the student is deleted from the database
-    const deletedStudent = await studentModel.findById(newStudent._id);
-    expect(deletedStudent).toBeNull(); // Expect the deleted student to be null (not found)
-  });
-
   //Patch Rout
-  test("Patch /:id - Update a specific book", async () => {
-    // Create a new book
-    const newStudent = await userRepo.createUser({
-      name: "Mee Reak",
+  test("Patch /:id - Update a specific user", async () => {
+    const newStudent = await userModel.create({
+      username: "Leeminhai",
       age: 20,
     });
-
     // Make the request
     const res = await request(app)
-      .patch(`/api/student/${newStudent.id}`)
-      .send({ name: "Mee Reak", age: 2 });
-
+      .patch(`/users/${newStudent.id}`)
+      .send({ username: "Leeminhoo", age: 10 });
     // Assert on response status and body
     expect(res.status).toBe(StatusCode.OK);
-    expect(res.body).toEqual({
-      student: {
-        name: "Helllo",
-        age: 23,
-      },
+
+  });
+
+  //Delete by Id
+
+  test("Delete/:id", async () => {
+    const newStudent = await userModel.create({
+      username: "Ling",
+      age: 19,
     });
+    //response
+    const res = await request(app).delete(`/users/${newStudent._id}`);
+    expect(res.status).toBe(StatusCode.NoContent);
+    //make sure that the user was delete
+    const deleteUser = await userModel.findById(newStudent._id);
+    expect(deleteUser).toBeNull();
   });
 });

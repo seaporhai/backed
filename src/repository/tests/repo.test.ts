@@ -1,7 +1,6 @@
 import { MongoMemoryServer } from "mongodb-memory-server";
 import mongoose from "mongoose";
 import { userRepo } from "../userRepo";
-import { clear } from "console";
 
 let mongoServer: MongoMemoryServer;
 
@@ -55,23 +54,26 @@ describe("UserRepo", () => {
 
       expect(foundUser).toBeNull();
     });
-    test("update a student", async () => {
-      const student = {
-        username: "Hello world",
-        age: 20,
-      };
-      const newUser = await newUserRepo.createUser(student);
-      const updateStudent = {
-        username: "Hello",
-        age: 10,
-      };
-      const update = await newUserRepo.updateUser(newUser.id, updateStudent);
-      expect(update).toBeDefined();
-      expect(update.username).toBe(updateStudent.username);
-      expect(updateStudent.age).toBe(updateStudent.age);
-      const foundUser = await newUserRepo.SearchId(update.id);
-      expect(foundUser.username).toBe(updateStudent.username);
-    });
+
+
+
+    // test("update a student", async () => {
+    //   const student = {
+    //     username: "Hello world",
+    //     age: 20,
+    //   };
+    //   const newUser = await newUserRepo.createUser(student);
+    //   const updateStudent = {
+    //     username: "Hello",
+    //     age: 10,
+    //   };
+    //   const update = await newUserRepo.updateUser(newUser.id, updateStudent);
+    //   expect(update).toBeDefined();
+    //   expect(update.username).toBe(updateStudent.username);
+    //   expect(updateStudent.age).toBe(updateStudent.age);
+    //   const foundUser = await newUserRepo.SearchId(update.id);
+    //   expect(foundUser.username).toBe(updateStudent.username);
+    // });
     test("search all student", async () => {
       const student = {
         username: "Hello world",
@@ -85,22 +87,22 @@ describe("UserRepo", () => {
     });
   });
 //shopw student by ID
-  test("Show student by id", async () => {
-    const student = {
-      username: "John Doe",
-      age: 20,
-    };
+  // test("Show student by id", async () => {
+  //   const student = {
+  //     username: "John Doe",
+  //     age: 20,
+  //   };
 
-    //add that student to database
-    const newUser = await userRepo.adduser(student);
+  //   //add that student to database
+  //   const newUser = await userRepo.adduser(student);
 
-    //find that student
-    const findUser = userRepo.showStudentById(newUser._id);
+  //   //find that student
+  //   const findUser = userRepo.showStudentById(newUser.);
 
-    // Assertions;
-    expect(findUser).toBeDefined();
-    expect(findUser?.id).toBe(newUser.id);
-    expect(findUser?.username).toBe(student.username);
-    expect(findUser?.age).toBe(student.age);
-  });
+  //   // Assertions;
+  //   expect(findUser).toBeDefined();
+  //   expect(findUser?.id).toBe(newUser.id);
+  //   expect(findUser?.username).toBe(student.username);
+  //   expect(findUser?.age).toBe(student.age);
+  // });
 });

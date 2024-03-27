@@ -1,5 +1,4 @@
-const userModel = require("../models/users.model");
-
+import { userModel } from "../models/users.model";
 export class userRepo {
   static adduser(student: { username: string; age: number; }) {
     throw new Error("Method not implemented.");
