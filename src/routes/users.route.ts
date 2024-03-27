@@ -63,7 +63,7 @@ Route.post(
     try {
       const userController = new UsersController();
       const newUser = await userController.createStudent(req.body);
-      res.status(StatusCode.OK).send({ users: { newUser } });
+      res.status(StatusCode.Created).send({ users: { newUser } });
     } catch (error) {
       _next(error);
     }
@@ -71,9 +71,44 @@ Route.post(
 ); // Corrected middleware function name
 
 //update user
-// Route.patch("/:id", validateMongooseId, usersControllers.updateUser);
+Route.patch(
+  "/:id",
+  validateMongooseId,
+  async (req: Request, res: Response, _next: NextFunction) => {
+    try {
+      const id = req.params.id; // Extract id from request parameters
+      const userController = new UsersController();
+      const data = {
+        username: req.body.username,
+        age: req.body.age,
+      };
+      const newUser = await userController.updateUser(id, data); // Removed extra closing parenthesis
+      res.status(StatusCode.OK).send({ users: { newUser } });
+    } catch (error) {
+      // Added error parameter
+      _next(new Error("Internal Server Error"));
+    }
+  }
+);
 
 //delete user
-// Route.delete("/:id", validateMongooseId, usersControllers.deleteUser);
+Route.delete(
+  "/:id",
+  validateMongooseId,
+  async (req: Request, res: Response, _next: NextFunction) => {
+    try {
+      const { id } = req.params;
+      const userController = new UsersController();
+      const response = await userController.deleteUser(id);
+      res.status(StatusCode.NoContent).json({
+        message: "Delete successful!",
+        error: false,
+        data: response,
+      });
+    } catch {
+      _next(new Error("Internal Server Error"));
+    }
+  }
+);
 
 export { Route };

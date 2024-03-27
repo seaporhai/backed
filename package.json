@@ -8,8 +8,8 @@
     "build": "npm run generate-swagger && npx tsc",
     "start": "node build/server.js",
     "dev": "nodemon  src/server.ts",
-    "swagger": "tsoa spec",
-    "compile": "tsc"
+    "compile": "tsc",
+    "swagger": "nodemon -e ts -x \"tsoa spec\""
   },
   "nodemonConfig": {
     "watch": [
