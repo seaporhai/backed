@@ -7,7 +7,21 @@
 		"requestBodies": {},
 		"responses": {},
 		"schemas": {
-			"user": {
+			"UserQuery": {
+				"properties": {
+					"page": {
+						"type": "number",
+						"format": "double"
+					},
+					"limit": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"type": "object",
+				"additionalProperties": false
+			},
+			"User": {
 				"properties": {
 					"username": {
 						"type": "string"
@@ -50,13 +64,37 @@
 					}
 				},
 				"security": [],
-				"parameters": []
+				"parameters": [
+					{
+						"in": "query",
+						"name": "page",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "limit",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
 			},
 			"post": {
-				"operationId": "CreateStudent",
+				"operationId": "CreateUser",
 				"responses": {
-					"204": {
-						"description": "No content"
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
 					}
 				},
 				"security": [],
@@ -66,7 +104,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/user"
+								"$ref": "#/components/schemas/User"
 							}
 						}
 					}
@@ -126,7 +164,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/user"
+								"$ref": "#/components/schemas/User"
 							}
 						}
 					}

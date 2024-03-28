@@ -1,46 +1,42 @@
-import { Mock } from "node:test";
 import { userRepo } from "../repository/userRepo";
 import { User } from "../types/users";
-export class userService {
-  static DeleteUser: any;
-  static updateUser(id: string, data: User) {
-    throw new Error("Method not implemented.");
-  }
-  static addUser(userData: User) {
-    throw new Error("Method not implemented.");
-  }
-  static SearchId(id: string) {
-    throw new Error("Method not implemented.");
-  }
-  static searchUser() {
-    throw new Error("Method not implemented.");
-  }
-  findOneUser(id: string) {
-    throw new Error("Method not implemented.");
-  }
-  repo: userRepo;
-  User: { username: any; age: any } | undefined;
+import { userModel } from "../models/users.model";
+
+export class UserService {
+  private repo: userRepo;
+
   constructor() {
     this.repo = new userRepo();
   }
-  //search
-  async searchUser() {
-    return await this.repo.searchUser();
+
+  // Search users
+  async searchUser(req: any): Promise<any> {
+    return await this.repo.searchUser(req);
   }
-  // search ID
-  async SearchId(id: string) {
+
+  // Search user by ID
+  async searchId(id: string): Promise<any> {
     return await this.repo.SearchId(id);
   }
-  // delete user
-  async DeleteUser(id: string) {
+
+  // Delete user
+  async deleteUser(id: string): Promise<any> {
     return await this.repo.DeleteUser(id);
   }
-  //add user
-  async addUser(userDatail: any): Promise<any> {
-    return await this.repo.createUser(userDatail);
+
+  // Add user
+  async addUser(userData: any): Promise<any> {
+    try {
+      const newUser = await userModel.create(userData);
+      return newUser;
+    } catch (error) {
+      throw error;
+    }
   }
-  //update
-  async updateUser(id: string, user: object) {
+  
+
+  // Update user
+  async updateUser(id: string, user: User): Promise<any> {
     return await this.repo.updateUser(id, user);
   }
 }

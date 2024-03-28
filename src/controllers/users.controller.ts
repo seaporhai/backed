@@ -1,77 +1,106 @@
-import { userService } from "../Service/userService";
-import { Post, Get, Route, Patch, Delete, Body, Path } from "tsoa";
+import { UserService } from "../Service/userService";
+import { Post, Get, Route, Patch, Delete, Body, Path, Query, Queries } from "tsoa";
+import { userModel } from "../models/users.model";
+import { BaseCustomError } from "../utils/baseCustome";
+import { StatusCode } from "../utils/statuscode";
+import { PaginateType } from "../routes/@types/Paginate";
 
-export interface user {
+// Define user interface
+export interface User {
   username: string;
   age: number;
 }
 
+// Define query parameters interface
+interface UserQuery {
+  page?: number;
+  limit?: number;
+}
+
+interface Options {
+  page?: number;
+  limit?: number;
+  skip?: number;
+}
 @Route("users")
 export class UsersController {
-  private userService: userService;
+  private userService: UserService;
 
   constructor() {
-    this.userService = new userService();
+    this.userService = new UserService();
   }
+
+
+  // Get users with pagination
   @Get("/")
-  public async getUsers(): Promise<any> {
+  public async getUsers(@Queries() query: UserQuery): Promise<any> {
     try {
-      const searchUser = await this.userService.searchUser();
+      const { page = 1, limit = 10 } = query;
+      const skip = (page - 1) * limit;
 
-      return searchUser;
+      const usersData = await userModel.find().skip(skip).limit(limit).exec();
+
+      const totalDocuments: number = await userModel.countDocuments();
+      const totalPages: number = Math.ceil(totalDocuments / limit);
+      
+      if (!usersData) {
+        throw new BaseCustomError("No Data", StatusCode.NotFound);
+      }
+      const pagination: PaginateType = {
+        currentPage: page,
+        totalPages: totalPages,
+        totalDocuments: totalDocuments,
+      };
+      return { user: usersData, paginate: pagination };
     } catch (error: any) {
       throw error;
     }
   }
-
-  //get user by thier id
+  // Get user by their ID
   @Get("/:id")
-  public async GetUserById(@Path() id: string): Promise<any> {
+  public async getUserById(@Path() id: string): Promise<any> {
     try {
-      const user = await this.userService.SearchId(id);
-
+      const user = await this.userService.searchId(id);
       return user;
+    } catch (error: unknown) {
+      if (error instanceof BaseCustomError) {
+        throw error;
+      }
+    }
+  }
+
+  // Create a new user
+  @Post("/")
+  public async createUser(@Body() requestBody: User): Promise<any> {
+    const { username, age } = requestBody;
+    try {
+      const newUser = await this.userService.addUser({ username, age });
+      return newUser;
     } catch (error: any) {
       throw error;
     }
   }
 
-  // Create the user
-  @Post("/")
-  public async createStudent(@Body() requestBody: user): Promise<void> {
-    const { username, age } = requestBody;
-
-    try {
-      const student = await this.userService.addUser({
-        username,
-        age,
-      });
-      return student;
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  //Update the use using the ID
+  // Update user by their ID
   @Patch("/:id")
   public async updateUser(
     @Path() id: string,
-    @Body() data: user
+    @Body() users: User
   ): Promise<any> {
     try {
-      const updated = await this.userService.updateUser(id, data);
-      return updated;
+      const updatedUser = await this.userService.updateUser(id, users);
+      return updatedUser;
     } catch (error: any) {
       throw error;
     }
   }
 
-  //Delete User by thier Id
+  // Delete user by their ID
   @Delete("/:id")
   public async deleteUser(@Path() id: string): Promise<any> {
     try {
-      const deleteUser = await this.userService.DeleteUser(id);
-      return deleteUser;
+      const deletedUser = await this.userService.deleteUser(id);
+      return deletedUser;
     } catch (error: any) {
       throw error;
     }

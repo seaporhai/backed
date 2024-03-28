@@ -1,6 +1,6 @@
 export interface User {
   username: string;
-  age: string;
+  age: number;
 }
 
 export interface App {
