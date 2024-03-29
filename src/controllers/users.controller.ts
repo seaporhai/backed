@@ -1,5 +1,5 @@
 import { UserService } from "../Service/userService";
-import { Post, Get, Route, Patch, Delete, Body, Path, Query, Queries } from "tsoa";
+import { Post, Get, Route, Patch, Delete, Body, Path, Query, Queries , SuccessResponse } from "tsoa";
 import { userModel } from "../models/users.model";
 import { BaseCustomError } from "../utils/baseCustome";
 import { StatusCode } from "../utils/statuscode";
@@ -9,6 +9,8 @@ import { PaginateType } from "../routes/@types/Paginate";
 export interface User {
   username: string;
   age: number;
+  email : string;
+  password : string; 
 }
 
 // Define query parameters interface
@@ -30,6 +32,7 @@ export class UsersController {
     this.userService = new UserService();
   }
 
+ 
 
   // Get users with pagination
   @Get("/")
@@ -72,9 +75,9 @@ export class UsersController {
   // Create a new user
   @Post("/")
   public async createUser(@Body() requestBody: User): Promise<any> {
-    const { username, age } = requestBody;
+    const { username, age , email , password } = requestBody;
     try {
-      const newUser = await this.userService.addUser({ username, age });
+      const newUser = await this.userService.addUser({ username, age , email , password });
       return newUser;
     } catch (error: any) {
       throw error;

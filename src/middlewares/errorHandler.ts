@@ -1,17 +1,16 @@
 import { Request, Response, NextFunction } from "express";
 import { BaseCustomError } from "../utils/baseCustome";
-import { StatusCode } from "../utils/statuscode";
 
 // Global error handler middleware
 function errorHandler(
   err: Error,
   req: Request,
   res: Response,
-  next: NextFunction
+  _next: NextFunction
 ) {
   // Default to 500 if no status code is set
   if (err instanceof BaseCustomError) {
-    const statusCode = err.statuscode;
+    const statusCode = err.statusCode;
 
     //res to client
     return res.status(statusCode).json({
@@ -19,6 +18,7 @@ function errorHandler(
       message: err.message,
     });
   }
+  _next();
 }
 
 export default errorHandler;

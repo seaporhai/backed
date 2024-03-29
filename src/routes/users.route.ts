@@ -23,9 +23,9 @@ Route.get("/", async (req: Request, res: Response, _next: NextFunction) => {
     const options: Options = {
       page: parseInt(page as string, 10),
       limit: parseInt(limit as string, 10),
-      skip: 0
+      skip: 0,
     };
-    const response = await userController.getUsers(options)
+    const response = await userController.getUsers(options);
     if (!response) {
       throw new Error("No user found!");
     }
@@ -91,6 +91,8 @@ Route.patch(
       const data = {
         username: req.body.username,
         age: req.body.age,
+        email: req.body.email,
+        password: req.body.password,
       };
       const newUser = await userController.updateUser(id, data); // Removed extra closing parenthesis
       res.status(StatusCode.OK).send({ users: { newUser } });

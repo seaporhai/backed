@@ -40,11 +40,11 @@ const usersSchema: Schema<User> = new Schema<User>({
     required: true,
     select: false, // Hide the password field when querying a document.
   },
-// Automatically manage createdAt and updatedAt fields
+  // Automatically manage createdAt and updatedAt fields
   createdAt: {
     type: Date,
     default: Date.now,
-  },
+  }, 
 });
 
 export const userModel = mongoose.model<User>("users", usersSchema);

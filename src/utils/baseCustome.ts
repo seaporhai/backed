@@ -3,7 +3,7 @@ export class BaseCustomError extends Error {
 
   constructor(message: string | undefined, statuscode: number) {
     super(message);
-    this.statuscode = statuscode;
+    this.statusCode = statuscode;
     this.name = this.constructor.name;
     Error.captureStackTrace(this, this.constructor);
   }
