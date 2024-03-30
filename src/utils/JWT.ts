@@ -1,18 +1,12 @@
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import { BaseCustomError } from "./baseCustome";
+import { StatusCode } from "./statuscode";
 
-const plaintextPassword = 'your_password_here';
-const saltRounds = 10;
-
-const hashPassword = (plaintextPassword : any , saltRounds: any ) => {
-    return new Promise((resolve, reject) => {
-        bcrypt.hash(plaintextPassword, saltRounds, (err, hashedPassword) => {
-            if (err) {
-                reject(err);
-                return;
-            }
-            resolve(hashedPassword);
-        });
-    });
-};
-
-export default hashPassword;
+export const hashedPassword = async (password: string , salt : any) => {
+    try {
+      return await bcrypt.hash(password, salt);
+    } catch (error: unknown) {
+      throw new BaseCustomError("Unable to generate password!",StatusCode.InternalServerError);
+    }
+  };

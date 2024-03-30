@@ -63,23 +63,22 @@ Route.get(
 );
 
 //create user
-Route.post(
-  "/",
-  usevalidation(schema),
-  async (req: Request, res: Response, _next: NextFunction) => {
-    try {
-      const userController = new UsersController();
-      const newUser = await userController.createUser(req.body);
-      res.status(StatusCode.Created).json({
-        message: "POST success",
-        user: newUser,
-      });
-    } catch (error) {
-      _next(error);
-    }
-  }
-); // Corrected middleware function name
+Route.post('/users', async (req, res , requestBody) => {
+  try {
+    // Extract user data from request body
+    const user = req.body;
 
+    // Call createUser method in UsersController to create the user
+    const newUser = await  userController.createUser(user) ;
+
+    // Send response with the newly created user
+    res.status(201).json(newUser);
+  } catch (error) {
+    // Handle errors
+    console.error('Error creating user:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
 //update user
 Route.patch(
   "/:id",

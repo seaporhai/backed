@@ -29,12 +29,17 @@ describe("UserRepo", () => {
       const student = {
         username: "Hello world",
         age: 20,
+        email:"seanghai@gmail.com",
+        password: "012909090"
       };
       const newUser = await newUserRepo.createUser(student);
       //assertion
       expect(newUser).toBeDefined();
       expect(newUser.username).toBe(student.username);
       expect(newUser.age).toBe(student.age);
+      expect(newUser.email).toBe(student.email);
+      expect(newUser.password).toBe(student.password);
+
       //check if the student is saved in the database
       const foundUser = await newUserRepo.SearchId(newUser.id);
       expect(foundUser).toBeDefined();

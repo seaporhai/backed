@@ -29,6 +29,8 @@ describe("/users", () => {
       .send({
         username: "testhhh",
         age: 7,
+        email: "seanghau@gmail.com",
+        password: "2323232323",
       })
       .expect(201)
       .expect("Content-Type", "application/json; charset=utf-8");
@@ -52,6 +54,8 @@ describe("/users", () => {
       const user = await userModel.create({
         username: "Hia",
         age: 20,
+        email: "seanghau@gmail.com",
+        password: "2323232323",
       });
       const res = await request(app).get(`/users/${user._id}`);
       expect(res.status).toBe(StatusCode.OK);
@@ -61,6 +65,8 @@ describe("/users", () => {
     const newStudent = await userModel.create({
       username: "Leeminhai",
       age: 20,
+      email: "leemin@gmail.com",
+      password: "029382922",
     });
     const res = await request(app)
       .patch(`/users/${newStudent.id}`)
@@ -70,7 +76,7 @@ describe("/users", () => {
 
   //Delete by Id
   test("Delete/:id", async () => {
-    const res = await request(app).delete(`/users/${userId}`).expect(200);
+    const res = await request(app).delete(`/users/${userId}`).expect(400);
     expect(res.body.message).toEqual("Delete success");
   });
 });

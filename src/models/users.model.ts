@@ -1,4 +1,5 @@
 import mongoose, { Schema, Document } from "mongoose";
+import { number, string } from "zod";
 
 export interface User extends Document {
   username: string;
@@ -37,6 +38,8 @@ const usersSchema: Schema<User> = new Schema<User>({
   },
   password: {
     type: Number,
+    min: 1,
+    max: 25,
     required: true,
     select: false, // Hide the password field when querying a document.
   },

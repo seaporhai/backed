@@ -1,5 +1,16 @@
 import { UserService } from "../Service/userService";
-import { Post, Get, Route, Patch, Delete, Body, Path, Query, Queries , SuccessResponse } from "tsoa";
+import {
+  Post,
+  Get,
+  Route,
+  Patch,
+  Delete,
+  Body,
+  Path,
+  Query,
+  Queries,
+  SuccessResponse,
+} from "tsoa";
 import { userModel } from "../models/users.model";
 import { BaseCustomError } from "../utils/baseCustome";
 import { StatusCode } from "../utils/statuscode";
@@ -9,8 +20,8 @@ import { PaginateType } from "../routes/@types/Paginate";
 export interface User {
   username: string;
   age: number;
-  email : string;
-  password : string; 
+  email: string;
+  password: string;
 }
 
 // Define query parameters interface
@@ -32,8 +43,6 @@ export class UsersController {
     this.userService = new UserService();
   }
 
- 
-
   // Get users with pagination
   @Get("/")
   public async getUsers(@Queries() query: UserQuery): Promise<any> {
@@ -45,7 +54,7 @@ export class UsersController {
 
       const totalDocuments: number = await userModel.countDocuments();
       const totalPages: number = Math.ceil(totalDocuments / limit);
-      
+
       if (!usersData) {
         throw new BaseCustomError("No Data", StatusCode.NotFound);
       }
@@ -75,12 +84,20 @@ export class UsersController {
   // Create a new user
   @Post("/")
   public async createUser(@Body() requestBody: User): Promise<any> {
-    const { username, age , email , password } = requestBody;
+    const { username, age, email, password } = requestBody;
     try {
-      const newUser = await this.userService.addUser({ username, age , email , password });
+      const newUser = await this.userService.addUser({
+        username,
+        age,
+        email,
+        password,
+        status : "succees",
+        message :"user Created"
+      });
       return newUser;
     } catch (error: any) {
       throw error;
+      
     }
   }
 

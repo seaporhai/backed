@@ -51,31 +51,46 @@ export class userRepo {
   }
   //create
   async createUser(user: any): Promise<any> {
-    // return await userModel.create(user);
     try {
-      const { email } = user;
-      const existingUser = await this.getUserByEmail({ email });
+      const { username, age, email, password } = user;
       
+      // Check if user with the same email already exists
+      const existingUser = await userModel.findOne({ email });
+  
       if (existingUser) {
         throw new BaseCustomError("Email already in use!", StatusCode.Conflict);
       }
-      const userCreated = await new  userModel(user).save();
-      
+  
+      // Create the new user
+      const userCreated = await userModel.create(user);
       return userCreated;
     } catch (error: unknown) {
       if (error instanceof BaseCustomError) {
         throw error;
+      } else if (error instanceof Error) {
+        // Handle other types of errors
+        console.error("Error:", error.message);
+        throw new BaseCustomError(
+          "Unable to create user in database!",
+          StatusCode.InternalServerError
+        );
+      } else {
+        // Handle unexpected errors
+        console.error("Unexpected error:", error);
+        throw new BaseCustomError(
+          "Unexpected error occurred!",
+          StatusCode.InternalServerError
+        );
       }
-      throw new Error("Unable to create user in database!")
     }
   }
-    //update
-    async updateUser(id: string, user: object) {
-      return await userModel.findByIdAndUpdate(id, user, { new: true });
-    }
-    //delete user 
-    async DeleteUser(id: string) {
-      return await userModel.findOneAndDelete({ _id: id });
-    }
+
+  //update
+  async updateUser(id: string, user: object) {
+    return await userModel.findByIdAndUpdate(id, user, { new: true });
   }
-  
+  //delete user
+  async DeleteUser(id: string) {
+    return await userModel.findOneAndDelete({ _id: id });
+  }
+}
