@@ -15,6 +15,10 @@ import { userModel } from "../models/users.model";
 import { BaseCustomError } from "../utils/baseCustome";
 import { StatusCode } from "../utils/statuscode";
 import { PaginateType } from "../routes/@types/Paginate";
+import { sendVerificationEmail } from "../utils/sendingVerification";
+import { generateToken } from "../utils/JWT";
+import { token } from "morgan";
+import Mail from "nodemailer/lib/mailer";
 
 // Define user interface
 export interface User {
@@ -35,7 +39,7 @@ interface Options {
   limit?: number;
   skip?: number;
 }
-@Route("users")
+@Route("/users")
 export class UsersController {
   private userService: UserService;
 
@@ -83,21 +87,26 @@ export class UsersController {
 
   // Create a new user
   @Post("/")
-  public async createUser(@Body() requestBody: User): Promise<any> {
-    const { username, age, email, password } = requestBody;
+  public async createUser(@Body() requestBody: User): Promise<void> {
     try {
-      const newUser = await this.userService.addUser({
+      const { username, age, email, password } = requestBody;
+
+      const userService = new UserService();
+      const newUser = await userService.addUser({
         username,
         age,
         email,
         password,
-        status : "succees",
-        message :"user Created"
       });
+      const Gtoken = generateToken();
+      sendVerificationEmail(email , Gtoken );
       return newUser;
     } catch (error: any) {
-      throw error;
-      
+      console.error("Error creating user:", error);
+      throw new BaseCustomError(
+        "An error occurred while creating user",
+        StatusCode.InternalServerError
+      );
     }
   }
 

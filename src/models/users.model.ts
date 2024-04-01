@@ -5,7 +5,7 @@ export interface User extends Document {
   username: string;
   age: number;
   email: string;
-  password: number;
+  password: string;
   createdAt: Date;
 }
 
@@ -37,8 +37,8 @@ const usersSchema: Schema<User> = new Schema<User>({
     },
   },
   password: {
-    type: Number,
-    min: 1,
+    type: String,
+    min: 8,
     max: 25,
     required: true,
     select: false, // Hide the password field when querying a document.
@@ -47,7 +47,7 @@ const usersSchema: Schema<User> = new Schema<User>({
   createdAt: {
     type: Date,
     default: Date.now,
-  }, 
+  },
 });
 
 export const userModel = mongoose.model<User>("users", usersSchema);

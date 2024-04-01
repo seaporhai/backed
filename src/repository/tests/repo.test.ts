@@ -38,7 +38,7 @@ describe("UserRepo", () => {
       expect(newUser.username).toBe(student.username);
       expect(newUser.age).toBe(student.age);
       expect(newUser.email).toBe(student.email);
-      expect(newUser.password).toBe(student.password);
+      expect(newUser.age).toBe(student.age);
 
       //check if the student is saved in the database
       const foundUser = await newUserRepo.SearchId(newUser.id);

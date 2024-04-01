@@ -7,6 +7,7 @@ import { StatusCode } from "../../utils/statuscode";
 import { userModel } from "../../models/users.model";
 import exp from "constants";
 import { ExpressTemplateService } from "tsoa";
+import { OK } from "zod";
 
 let mongoServer: MongoMemoryServer;
 
@@ -23,7 +24,7 @@ afterAll(async () => {
 
 describe("/users", () => {
   let userId: string;
-  test("POST /users should create a new user", async () => {
+  test("POST /  should create a new user", async () => {
     const response = await request(app)
       .post("/users")
       .send({
@@ -36,12 +37,14 @@ describe("/users", () => {
       .expect("Content-Type", "application/json; charset=utf-8");
 
     // mongoServer = response.body.data._id;
-    console.log("this is post", response.body);
-    userId = response.body.user._id;
+    console.log("Response", response.body);
     expect(response.body).toBeDefined();
     expect(response.body.message).toEqual("POST success");
     expect(response.body.user.username).toEqual("testhhh");
     expect(response.body.user.age).toEqual(7);
+    expect(response.body.user.email).toEqual("seanghau@gmail.com");
+    expect(response.body.user.password).toEqual("2323232323");
+    userId = response.body.user._id;
   }); // Reduced timeout to 10 seconds
 
   //Get Rout
@@ -68,15 +71,21 @@ describe("/users", () => {
       email: "leemin@gmail.com",
       password: "029382922",
     });
-    const res = await request(app)
-      .patch(`/users/${newStudent.id}`)
-      .send({ username: "Leeminhoo", age: 10 });
+    const res = await request(app).patch(`/users/${newStudent.id}`).send({
+      username: "Leeminhoo",
+      age: 10,
+      email: "leemin@gmail.com",
+      password: "029382922",
+    });
     expect(res.status).toBe(StatusCode.OK);
   });
 
   //Delete by Id
-  test("Delete/:id", async () => {
-    const res = await request(app).delete(`/users/${userId}`).expect(400);
-    expect(res.body.message).toEqual("Delete success");
+  test("Delete /users/:id should delete a user by id", async () => {
+    const res = await request(app)
+      .delete(`/users/${userId}`) // use stored userId
+      .expect(StatusCode.OK); // use StatusCode.OK directly
+
+    expect(res.body.message).toEqual("User deleted successfully");
   });
 });

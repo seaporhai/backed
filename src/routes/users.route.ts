@@ -63,20 +63,20 @@ Route.get(
 );
 
 //create user
-Route.post('/users', async (req, res , requestBody) => {
+Route.post("/", async (req, res) => {
   try {
     // Extract user data from request body
     const user = req.body;
 
     // Call createUser method in UsersController to create the user
-    const newUser = await  userController.createUser(user) ;
+    const newUser = await userController.createUser(user);
 
     // Send response with the newly created user
     res.status(201).json(newUser);
   } catch (error) {
     // Handle errors
-    console.error('Error creating user:', error);
-    res.status(500).json({ message: 'Internal Server Error' });
+    console.error("Error creating user:", error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 });
 //update user

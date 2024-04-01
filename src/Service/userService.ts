@@ -5,6 +5,9 @@ import { hash } from "bcrypt";
 import { hashedPassword } from "../utils/JWT";
 import { StatusCode } from "../utils/statuscode";
 export class UserService {
+  // login(arg0: { username: string; age: number; email: string; password: string; status: string; message: string; }) {
+  //   throw new Error("Method not implemented.");
+  // }
   private repo: userRepo;
 
   constructor() {
@@ -26,24 +29,28 @@ export class UserService {
     return await this.repo.DeleteUser(id);
   }
   // Add user
- async addUser(userData: any): Promise<any> {
+  async addUser(userData: any): Promise<any> {
     try {
-        const { username, age, password, email } = userData;
+      const { username, age, password, email } = userData;
 
-        // Hash password using bcrypt
-        const hashPassword = await hashedPassword(password, 10);
-        
-        // Create a new object with hashed password
-        const userWithHashedPassword = { ...userData, password: hashPassword };
-        
-        // Create user with hashed password
-        return await this.repo.createUser(userWithHashedPassword);
+      // Hash password using bcrypt
+      const hashPassword = await hashedPassword(password, 10);
+
+      // Create a new object with hashed password
+      const newUsers = await this.repo.createUser({
+        username,
+        age,
+        email,
+        password: hashPassword,
+      });
+
+      // Create user with hashed password
+      return newUsers;
     } catch (error) {
-        console.error('Error hashing password:', error);
-        throw error; // Rethrow the error or handle it appropriately
-      
-      }
-}
+      console.error("Error hashing password:", error);
+      throw error; // Rethrow the error or handle it appropriately
+    }
+  }
 
   // Update user
   async updateUser(id: string, user: User): Promise<any> {

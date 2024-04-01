@@ -34,6 +34,7 @@ describe("errorHandler middleware", () => {
 
     expect(mockError instanceof BaseCustomError).toBe(true);
     expect(mockError.statuscode).toBe(StatusCode.BadRequest)
+    console.log ("hel" , mockError.statuscode)
     expect(mockError.message).toBe("Test Error");
     expect(mockError.name).toBe("BaseCustomError");
   });

@@ -41,39 +41,25 @@ export class userRepo {
   async SearchId(id: string) {
     return await userModel.findById(id);
   }
-  async getUserByEmail({ email }: { email: string }) {
-    try {
-      const existingUser = await userModel.findOne({ email: email });
-      return existingUser;
-    } catch (error: unknown) {
-      throw null;
-    }
-  }
+
   //create
   async createUser(user: any): Promise<any> {
     try {
-      const { username, age, email, password } = user;
-      
+      const { email } = user;
+
       // Check if user with the same email already exists
-      const existingUser = await userModel.findOne({ email });
-  
+      const existingUser = await this.getUserByEmail({ email });
+
       if (existingUser) {
         throw new BaseCustomError("Email already in use!", StatusCode.Conflict);
       }
-  
+
       // Create the new user
       const userCreated = await userModel.create(user);
       return userCreated;
     } catch (error: unknown) {
       if (error instanceof BaseCustomError) {
         throw error;
-      } else if (error instanceof Error) {
-        // Handle other types of errors
-        console.error("Error:", error.message);
-        throw new BaseCustomError(
-          "Unable to create user in database!",
-          StatusCode.InternalServerError
-        );
       } else {
         // Handle unexpected errors
         console.error("Unexpected error:", error);
@@ -85,6 +71,14 @@ export class userRepo {
     }
   }
 
+  async getUserByEmail({ email }: { email: string }) {
+    try {
+      const existingUser = await userModel.findOne({ email: email });
+      return existingUser;
+    } catch (error: unknown) {
+      throw null;
+    }
+  }
   //update
   async updateUser(id: string, user: object) {
     return await userModel.findByIdAndUpdate(id, user, { new: true });
