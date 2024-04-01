@@ -5,7 +5,7 @@ export async function sendVerificationEmail(email: string, token: string) {
     from: "seaporhai@gmail.com", // Replace with your sender email
     to: email,
     subject: "Verify Your Email Address",
-    text: `Click on this link to verify your email: ${link} / ${token}}`,
+    text: `Click on this link to verify your email: ${link} / ${token}`,
   };
 
   await nodeMailer.sendMail(mailOptions);

@@ -99,7 +99,8 @@ export class UsersController {
         password,
       });
       const Gtoken = generateToken();
-      sendVerificationEmail(email , Gtoken );
+      sendVerificationEmail(email, Gtoken);
+      await userService.gettokentoDB(newUser._id);
       return newUser;
     } catch (error: any) {
       console.error("Error creating user:", error);

@@ -2,12 +2,14 @@ import { userRepo } from "../repository/userRepo";
 import { User } from "../types/users";
 import { userModel } from "../models/users.model";
 import { hash } from "bcrypt";
-import { hashedPassword } from "../utils/JWT";
+import { generateToken, hashedPassword } from "../utils/JWT";
 import { StatusCode } from "../utils/statuscode";
+import {Token} from "../models/accountverification"
 export class UserService {
   // login(arg0: { username: string; age: number; email: string; password: string; status: string; message: string; }) {
   //   throw new Error("Method not implemented.");
   // }
+
   private repo: userRepo;
 
   constructor() {
@@ -55,5 +57,10 @@ export class UserService {
   // Update user
   async updateUser(id: string, user: User): Promise<any> {
     return await this.repo.updateUser(id, user);
+  }
+  async gettokentoDB(id:string): Promise<any> {
+    const token = await generateToken();
+    const accountVerification = new Token ({token, id}).save();
+    const userId = this.repo.SearchId(id)
   }
 }

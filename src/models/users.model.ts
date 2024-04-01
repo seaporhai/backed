@@ -6,6 +6,7 @@ export interface User extends Document {
   age: number;
   email: string;
   password: string;
+  isVerified: boolean,
   createdAt: Date;
 }
 
@@ -43,6 +44,10 @@ const usersSchema: Schema<User> = new Schema<User>({
     required: true,
     select: false, // Hide the password field when querying a document.
   },
+  isVerified: {
+    type: Boolean,
+    default: false
+},
   // Automatically manage createdAt and updatedAt fields
   createdAt: {
     type: Date,
