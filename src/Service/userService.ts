@@ -60,7 +60,7 @@ export class UserService {
   }
   async gettokentoDB(id:string): Promise<any> {
     const token = await generateToken();
-    const accountVerification = new Token ({token, id}).save();
-    const userId = this.repo.SearchId(id)
+    const accountVerification = new Token ({token, id }).save();
+   
   }
 }

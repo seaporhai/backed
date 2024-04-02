@@ -11,7 +11,7 @@ import mongoose from "mongoose";
   },
   expiresAt: {
     type: Date,
-    required: true,
+    required: false,
   },
 });
 
