@@ -98,11 +98,17 @@ export class UsersController {
         email,
         password,
       });
-      const Gtoken = generateToken();
-      const dateline = generateToken();
-      sendVerificationEmail(email, Gtoken  );
-      await userService.gettokentoDB(newUser._id);
-      return newUser;
+      // const link = `https://www.youtube.com/watch?v=BrlR1Q8EzGI&pp=ygUeYmVyayBzZWF2IHBob3Yga2Vybmggc25lIGNob3Jk`;
+      // const Gtoken = generateToken();
+      // const dateline = generateToken();
+      // sendVerificationEmail(email, Gtoken  );
+      // await userService.gettokentoDB(newUser._id);
+      // return newUser;
+      
+      const verifyEmailLink = "https://www.youtube.com/watch?v=BrlR1Q8EzGI&pp=ygUeYmVyayBzZWF2IHBob3Yga2Vybmggc25lIGNob3Jk";
+
+      await sendVerificationEmail(newUser.email, verifyEmailLink);
+      return newUser
     } catch (error: any) {
       console.error("Error creating user:", error);
       throw new BaseCustomError(
