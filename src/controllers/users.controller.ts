@@ -16,7 +16,7 @@ import { BaseCustomError } from "../utils/baseCustome";
 import { StatusCode } from "../utils/statuscode";
 import { PaginateType } from "../routes/@types/Paginate";
 import { sendVerificationEmail } from "../utils/sendingVerification";
-import { generateToken } from "../utils/JWT";
+import { generateToken, hashedPassword } from "../utils/JWT";
 import { token } from "morgan";
 import Mail from "nodemailer/lib/mailer";
 
@@ -89,6 +89,7 @@ export class UsersController {
   @Post("/")
   public async createUser(@Body() requestBody: User): Promise<void> {
     try {
+      const tokenss = await generateToken();
       const { username, age, email, password } = requestBody;
 
       const userService = new UserService();
@@ -98,23 +99,13 @@ export class UsersController {
         email,
         password,
       });
-      // const link = `https://www.youtube.com/watch?v=BrlR1Q8EzGI&pp=ygUeYmVyayBzZWF2IHBob3Yga2Vybmggc25lIGNob3Jk`;
-      // const Gtoken = generateToken();
-      // const dateline = generateToken();
-      // sendVerificationEmail(email, Gtoken  );
-      // await userService.gettokentoDB(newUser._id);
-      // return newUser;
-      
-      const verifyEmailLink = "https://www.youtube.com/watch?v=BrlR1Q8EzGI&pp=ygUeYmVyayBzZWF2IHBob3Yga2Vybmggc25lIGNob3Jk";
 
-      await sendVerificationEmail(newUser.email, verifyEmailLink);
-      return newUser
+      const token = generateToken()
+      // await userService.gettokentoDB(tokenss, newUser.id);
+      await sendVerificationEmail(newUser.email , token);
+      return newUser;
     } catch (error: any) {
-      console.error("Error creating user:", error);
-      throw new BaseCustomError(
-        "An error occurred while creating user",
-        StatusCode.InternalServerError
-      );
+      throw error;
     }
   }
 
@@ -142,4 +133,17 @@ export class UsersController {
       throw error;
     }
   }
+  // @Get("/verify")
+  // public async verifyUser(@Query() token: string , id : string ): Promise<any> {
+  //   try {
+  //     // Verify the email token
+  //     const user = await this.userService.VerifyUser(id , token );
+
+  //     const Token = await generateToken();
+  //     return await sendVerificationEmail(user.email, Token);
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // }
+
 }

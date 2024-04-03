@@ -3,6 +3,8 @@ import { Request, Response } from "express";
 import { BaseCustomError } from "../utils/baseCustome";
 import { StatusCode } from "../utils/statuscode";
 import errorHandler from "../middlewares/errorHandler";
+import { Token } from "../models/accountverification";
+import { ObjectId } from "mongodb";
 export class userRepo {
   // static adduser(student: { username: string; age: number; }) {
   //   throw new Error("Method not implemented.");
@@ -55,8 +57,9 @@ export class userRepo {
       }
 
       // Create the new user
-      const userCreated = await userModel.create(user);
-      return userCreated;
+      const userCreated = userModel.create(user);
+
+      return (await userCreated).save();
     } catch (error: unknown) {
       if (error instanceof BaseCustomError) {
         throw error;
@@ -86,5 +89,36 @@ export class userRepo {
   //delete user
   async DeleteUser(id: string) {
     return await userModel.findOneAndDelete({ _id: id });
+  }
+  async getTokentoDatabase(id: string, token: string) {
+    try {
+      const verify = new Token({ userId: id, token: token });
+      
+      return await verify.save();
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async createTokenId(id: string, token: string) {
+    try {
+      return Token.create({ userId: id, token });
+    } catch (error) {
+      throw error;
+    }
+  }
+  async deleteToken(token: string) {
+    try {
+      return await Token.deleteOne({ token: token });
+    } catch (error) {
+      throw error;
+    }
+  }
+  async SignUp(newData: object) {
+    try {
+      return await userModel.create(newData);
+    } catch (error) {
+      throw new BaseCustomError("The email already use", StatusCode.OK);
+    }
   }
 }

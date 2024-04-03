@@ -2,6 +2,7 @@ import mongoose, { Schema, Document } from "mongoose";
 import { number, string } from "zod";
 
 export interface User extends Document {
+  
   username: string;
   age: number;
   email: string;

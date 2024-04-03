@@ -11,27 +11,26 @@
 //   await nodeMailer.sendMail(mailOptions);
 // }
 require("dotenv").config();
+import { token } from "morgan";
 import nodemailer from "nodemailer";
+import { generateToken } from "./JWT";
 
-export async function sendVerificationEmail(
-  email: string,
-  verificationLink: string
-) {
+export async function sendVerificationEmail(email: string , token: String) {
   // Create a Nodemailer transporter
   const transporter = nodemailer.createTransport({
     service: "Gmail",
     auth: {
-      user: process.env.USER,
-      pass: process.env.PASSWORD,
+      user: process.env.USER as string,
+      pass: process.env.PASSWORD as string,
     },
   });
-
+  // await sendVerificationEmail(newUser.email, verifyEmailLink);
   // Email content
   const mailOptions = {
-    from: process.env.USER,
+    from: process.env.USER as string,
     to: email,
     subject: "Verify your email address",
-    html: `Please click <a href="${verificationLink}">this shit </a> to verify your email address.`,
+    text: `http://localhost:3001/users/verify?token=${token}`,
   };
 
   // Send email

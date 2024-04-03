@@ -19,13 +19,6 @@ export const hashedPassword = async (password: string, salt: any) => {
 };
 
 export function generateToken() {
-  const generateDate = (expiresIn = 20000) => {
-    const token = randomBytes(20).toString("hex");
-    const expiresAt = Date.now() + expiresIn;
-    return { token, expiresAt };
+    const token = randomBytes(32).toString("hex");
+    return token;
   };
-  const { token, expiresAt } = generateDate(20000);
-  console.log("Generated token:", token);
-  console.log("Token expires at:", new Date(expiresAt));
-  return token;
-}
