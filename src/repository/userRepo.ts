@@ -90,19 +90,20 @@ export class userRepo {
   async DeleteUser(id: string) {
     return await userModel.findOneAndDelete({ _id: id });
   }
-  async getTokentoDatabase(id: string, token: string) {
-    try {
-      const verify = new Token({ userId: id, token: token });
-      
-      return await verify.save();
-    } catch (error) {
-      throw error;
-    }
-  }
+  // async getTokentoDatabase(id: string, token: string) {
+  //   try {
+  //     const verify = new Token({ userId: id, token: token });
 
-  async createTokenId(id: string, token: string) {
+  //     return await verify.save();
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // }
+
+  ///token model
+  async createTokenId({ token, userId }: { token: string; userId: string }) {
     try {
-      return Token.create({ userId: id, token });
+      return Token.create({ userId, token });
     } catch (error) {
       throw error;
     }

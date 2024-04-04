@@ -11,6 +11,8 @@ import { Query } from "tsoa";
 import { Options } from "./@types/userRout";
 import { Token } from "../models/accountverification";
 import { userModel } from "../models/users.model";
+import { generateToken } from "../utils/JWT";
+import { token } from "morgan";
 
 const Route: Router = express.Router(); // Set type of Route as Router
 const userController = new UsersController();
@@ -71,7 +73,7 @@ Route.post("/", async (req: Request, res: Response, _next: NextFunction) => {
     const user = req.body;
 
     // Call createUser method in UsersController to create the user
-    const newUser = await userController.createUser(user);
+    const newUser = await userController.createUser(user );
 
     // Send response with the newly created user
     res.status(201).json({
@@ -125,11 +127,12 @@ Route.delete(
   }
 );
 Route.post(
-  "/signup",
+  "/",
   validateMongooseId,
   async (req: Request, res: Response, _next: NextFunction) => {
     try {
       const userController = new UsersController();
+      const token = generateToken();
       const user = await userController.createUser(req.body);
       res.status(StatusCode.OK).json({
         message: "Create success",
@@ -149,7 +152,7 @@ Route.get("/verify", async (req: Request, res: Response) => {
       throw new BaseCustomError("Verification token is invalid", StatusCode.BadRequest);
     }
 
-    const userId = isToken.useId;
+    const userId = isToken.userId;
     const user = await userModel.findById(userId);
 
     if (!user) {

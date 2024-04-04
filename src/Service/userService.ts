@@ -5,6 +5,7 @@ import { Token } from "../models/accountverification";
 import { ObjectId } from "mongodb";
 import { StatusCode } from "../utils/statuscode";
 import { BaseCustomError } from "../utils/baseCustome";
+import { sendVerificationEmail } from "../utils/sendingVerification";
 export class UserService {
   // login(arg0: { username: string; age: number; email: string; password: string; status: string; message: string; }) {
   //   throw new Error("Method not implemented.");
@@ -44,16 +45,9 @@ export class UserService {
         email,
         password: hashPassword,
       });
-
-      if (!newUsers) {
-        throw new BaseCustomError(
-          "Unable to create user in database",
-          StatusCode.InternalServerError
-        );
-      }
-
-      // Create user with hashed password
-      return newUsers;
+     
+        return await this.repo.SignUp(newUsers);
+     
     } catch (error) {
       throw error; // Rethrow the error or handle it appropriately
     }
@@ -64,49 +58,20 @@ export class UserService {
     return await this.repo.updateUser(id, user);
   }
 
-  async gettokentoDB(token: string, id: string): Promise<any> {
-    const accountVerification = this.repo.getTokentoDatabase(token, id);
-    return (await accountVerification).save();
-  }
+  // async gettokentoDB(token: string, id: string): Promise<any> {
+  //   const accountVerification = this.repo.createTokenId(token, id);
 
-  async VerifyUser(id: string, token: string) {
-    const isToken: any = await this.repo.createTokenId(id, token);
+  //   return accountVerification;
 
-    if (!isToken) {
-      throw new BaseCustomError(
-        "Verification token is invalid",
-        StatusCode.BadRequest
-      );
-    }
-
-    const userId = isToken.id;
-    // Find the user associated with this token
-    const user = await this.repo.SearchId(userId);
-    if (!user) {
-      throw new BaseCustomError("User does not exist.", StatusCode.NotFound);
-    }
-
-    // Mark the user's email as verified
-    user.isVerified = true;
-    await user.save();
-
-    // Remove the verification token
-    await this.repo.deleteToken(token);
-    return user;
-  }
-  async SignUp(newData: object) {
-    return await this.repo.SignUp(newData);
-  }
-
-  
-  async saveToken(id : string, token: string) {
+ // }
+  async SendVerifyEmail(email: string, userId: string) {
     try {
-      const newToken = new Token({ id, token });
-      await newToken.save();
-      return { success: true, message: 'Token saved successfully' };
-    } catch (error) {
-      console.error('Error saving token:', error);
-      return { success: false, error: 'Failed to save token' };
+      const token = generateToken();
+      await sendVerificationEmail(email , token);
+      await this.repo.createTokenId({userId, token});
+    } catch (error: unknown) {
+      console.log('Error in sending verification Email', error);
+      throw error;
     }
   }
 

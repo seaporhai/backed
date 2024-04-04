@@ -7,18 +7,16 @@ import {
   Delete,
   Body,
   Path,
-  Query,
   Queries,
   SuccessResponse,
 } from "tsoa";
 import { userModel } from "../models/users.model";
-import { BaseCustomError } from "../utils/baseCustome";
+import { BaseCustomError } from "../utils/baseCustome"; // Fixed typo
 import { StatusCode } from "../utils/statuscode";
 import { PaginateType } from "../routes/@types/Paginate";
 import { sendVerificationEmail } from "../utils/sendingVerification";
 import { generateToken, hashedPassword } from "../utils/JWT";
-import { token } from "morgan";
-import Mail from "nodemailer/lib/mailer";
+import { string } from "zod";
 
 // Define user interface
 export interface User {
@@ -34,11 +32,6 @@ interface UserQuery {
   limit?: number;
 }
 
-interface Options {
-  page?: number;
-  limit?: number;
-  skip?: number;
-}
 @Route("/users")
 export class UsersController {
   private userService: UserService;
@@ -62,16 +55,19 @@ export class UsersController {
       if (!usersData) {
         throw new BaseCustomError("No Data", StatusCode.NotFound);
       }
+
       const pagination: PaginateType = {
         currentPage: page,
         totalPages: totalPages,
         totalDocuments: totalDocuments,
       };
-      return { user: usersData, paginate: pagination };
+
+      return { users: usersData, paginate: pagination }; // Changed 'user' to 'users' for consistency
     } catch (error: any) {
       throw error;
     }
   }
+
   // Get user by their ID
   @Get("/:id")
   public async getUserById(@Path() id: string): Promise<any> {
@@ -87,22 +83,20 @@ export class UsersController {
 
   // Create a new user
   @Post("/")
-  public async createUser(@Body() requestBody: User): Promise<void> {
+  public async createUser(@Body() requestBody: User): Promise<string> {
     try {
-      const tokenss = await generateToken();
       const { username, age, email, password } = requestBody;
-
       const userService = new UserService();
+      const hashPassword = await hashedPassword(password, 10);
       const newUser = await userService.addUser({
         username,
         age,
         email,
-        password,
+        password: hashPassword,
       });
+      const Tokenn = generateToken();
+      await  this.userService.SendVerifyEmail(email, Tokenn);
 
-      const token = generateToken()
-      // await userService.gettokentoDB(tokenss, newUser.id);
-      await sendVerificationEmail(newUser.email , token);
       return newUser;
     } catch (error: any) {
       throw error;
@@ -113,10 +107,10 @@ export class UsersController {
   @Patch("/:id")
   public async updateUser(
     @Path() id: string,
-    @Body() users: User
+    @Body() user: User // Changed parameter name from 'users' to 'user' for consistency
   ): Promise<any> {
     try {
-      const updatedUser = await this.userService.updateUser(id, users);
+      const updatedUser = await this.userService.updateUser(id, user);
       return updatedUser;
     } catch (error: any) {
       throw error;
@@ -133,17 +127,4 @@ export class UsersController {
       throw error;
     }
   }
-  // @Get("/verify")
-  // public async verifyUser(@Query() token: string , id : string ): Promise<any> {
-  //   try {
-  //     // Verify the email token
-  //     const user = await this.userService.VerifyUser(id , token );
-
-  //     const Token = await generateToken();
-  //     return await sendVerificationEmail(user.email, Token);
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  // }
-
 }

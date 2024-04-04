@@ -11,9 +11,7 @@
 //   await nodeMailer.sendMail(mailOptions);
 // }
 require("dotenv").config();
-import { token } from "morgan";
 import nodemailer from "nodemailer";
-import { generateToken } from "./JWT";
 
 export async function sendVerificationEmail(email: string , token: String) {
   // Create a Nodemailer transporter

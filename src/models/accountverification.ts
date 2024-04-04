@@ -2,10 +2,11 @@ import { ObjectId } from "mongodb";
 import mongoose from "mongoose";
 import { BaseCustomError } from "../utils/baseCustome";
 import { StatusCode } from "../utils/statuscode";
+import { string } from "zod";
 
   const tokenSchema = new mongoose.Schema({
-    useId: {
-      type: mongoose.Schema.Types.ObjectId,
+    userId: {
+      type: String,
       required: true,
     },
   token: {
@@ -28,3 +29,4 @@ import { StatusCode } from "../utils/statuscode";
 });
 
 export const Token = mongoose.model("Token", tokenSchema);
+

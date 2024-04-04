@@ -4,9 +4,10 @@ import { BaseCustomError } from "./baseCustome";
 import { StatusCode } from "./statuscode";
 import { randomBytes } from "crypto";
 
-const salt = 10;
+
 
 export const hashedPassword = async (password: string, salt: any) => {
+
   try {
     return await bcrypt.hash(password, salt);
   } catch (error: unknown) {
