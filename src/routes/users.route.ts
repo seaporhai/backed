@@ -73,12 +73,12 @@ Route.post("/", async (req: Request, res: Response, _next: NextFunction) => {
     const user = req.body;
 
     // Call createUser method in UsersController to create the user
-    const newUser = await userController.createUser(user );
+    const newUser = await userController.createUser(user);
 
     // Send response with the newly created user
     res.status(201).json({
-      message: "Success",
-      users: newUser,
+      message: `Success  Creted user , Hello ${req.body.username} please verify your email to log in  `,
+
     });
   } catch (error) {
     _next(error);
@@ -126,30 +126,31 @@ Route.delete(
     }
   }
 );
-Route.post(
-  "/",
-  validateMongooseId,
-  async (req: Request, res: Response, _next: NextFunction) => {
-    try {
-      const userController = new UsersController();
-      const token = generateToken();
-      const user = await userController.createUser(req.body);
-      res.status(StatusCode.OK).json({
-        message: "Create success",
-        users: user,
-      });
-    } catch (error) {
-      _next(error);
-    }
-  }
-);
+// Route.post(
+//   "/",
+//   validateMongooseId,
+//   async (req: Request, res: Response, _next: NextFunction) => {
+//     try {
+//       const userController = new UsersController();
+//       // const token = generateToken();
+//       // const user = await userController.createUser(req.body);
+//       res.json({ message : "Created successfully" });
+//       res.status(StatusCode.OK);
+//     } catch (error) {
+//       _next(error);
+//     }
+//   }
+// );
 Route.get("/verify", async (req: Request, res: Response) => {
   const { token } = req.query;
   try {
     const isToken = await Token.findOne({ token });
 
     if (!isToken) {
-      throw new BaseCustomError("Verification token is invalid", StatusCode.BadRequest);
+      throw new BaseCustomError(
+        "Verification token is invalid",
+        StatusCode.BadRequest
+      );
     }
 
     const userId = isToken.userId;
@@ -166,9 +167,13 @@ Route.get("/verify", async (req: Request, res: Response) => {
     // Remove the verification token
     await Token.deleteOne({ token });
 
-    return res.status(StatusCode.OK).json({ message: "User verified successfully", user });
+    return res
+      .status(StatusCode.OK)
+      .json({ message: "User verified successfully", user });
   } catch (error: any) {
-    return res.status(StatusCode.InternalServerError).json({ message: error.message });
+    return res
+      .status(StatusCode.InternalServerError)
+      .json({ message: error.message });
   }
 });
 export { Route };

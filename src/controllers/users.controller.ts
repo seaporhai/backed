@@ -9,6 +9,7 @@ import {
   Path,
   Queries,
   SuccessResponse,
+  Query,
 } from "tsoa";
 import { userModel } from "../models/users.model";
 import { BaseCustomError } from "../utils/baseCustome"; // Fixed typo
@@ -83,11 +84,12 @@ export class UsersController {
 
   // Create a new user
   @Post("/")
-  public async createUser(@Body() requestBody: User): Promise<string> {
+  public async createUser(@Body() requestBody: User ): Promise<string> {
     try {
       const { username, age, email, password } = requestBody;
       const userService = new UserService();
       const hashPassword = await hashedPassword(password, 10);
+    
       const newUser = await userService.addUser({
         username,
         age,
@@ -127,4 +129,5 @@ export class UsersController {
       throw error;
     }
   }
+ 
 }
