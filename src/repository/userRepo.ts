@@ -59,6 +59,9 @@ export class userRepo {
       const existingUser = await this.getUserByEmail({ email });
 
       if (existingUser) {
+        if(!existingUser.isVerified){
+          throw new BaseCustomError("The Email Not Verify yet !! " , StatusCode.Unauthorized );
+        }
         throw new BaseCustomError("Email already in use!", StatusCode.Conflict);
       }
 
@@ -109,7 +112,7 @@ export class userRepo {
   ///token model
   async createTokenId({ token, userId }: { token: string; userId: string }) {
     try {
-      return (await Token.create({ userId: userId, token: token })).save();
+      return Token.create({ userId, token });
     } catch (error) {
       throw error;
     }
