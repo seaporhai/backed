@@ -45,9 +45,8 @@ export class UserService {
         email,
         password: hashPassword,
       });
-     
-        return await this.repo.SignUp(newUsers);
-     
+
+      return await this.repo.SignUp(newUsers);
     } catch (error) {
       throw error; // Rethrow the error or handle it appropriately
     }
@@ -63,16 +62,32 @@ export class UserService {
 
   //   return accountVerification;
 
- // }
-  async SendVerifyEmail(email: string, userId: string) {
+  // }
+  async SendVerifyEmail(userId: string, token: string, email: string) {
     try {
-      const token = generateToken();
-      await sendVerificationEmail(email , token);
-      await this.repo.createTokenId({userId, token});
+      // const token = generateToken();
+      await sendVerificationEmail(email, token);
+      await this.repo.createTokenId({ userId, token });
     } catch (error: unknown) {
-      console.log('Error in sending verification Email', error);
+      console.log("Error in sending verification Email", error);
       throw error;
     }
   }
-
+  async verifyAccount(token: string) {
+    const isTk = await this.repo.findToken(token);
+    if (!isTk) {
+      throw new BaseCustomError(
+        "Verified Token Is inValid",
+        StatusCode.BadRequest
+      );
+    }
+    const User = await this.repo.SearchId(isTk.id);
+    if (!User) {
+      throw new BaseCustomError("Not Found", StatusCode.NotFound);
+    }
+    User.isVerified = true;
+    await User.save();
+    await this.repo.deleteToken(token);
+    return User;
+  }
 }

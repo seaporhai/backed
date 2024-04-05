@@ -18,6 +18,7 @@ import { PaginateType } from "../routes/@types/Paginate";
 import { sendVerificationEmail } from "../utils/sendingVerification";
 import { generateToken, hashedPassword } from "../utils/JWT";
 import { string } from "zod";
+import { Token } from "../models/accountverification";
 
 // Define user interface
 export interface User {
@@ -84,12 +85,12 @@ export class UsersController {
 
   // Create a new user
   @Post("/")
-  public async createUser(@Body() requestBody: User ): Promise<string> {
+  public async createUser(@Body() requestBody: User): Promise<string> {
     try {
       const { username, age, email, password } = requestBody;
       const userService = new UserService();
       const hashPassword = await hashedPassword(password, 10);
-    
+
       const newUser = await userService.addUser({
         username,
         age,
@@ -97,7 +98,7 @@ export class UsersController {
         password: hashPassword,
       });
       const Tokenn = generateToken();
-      await  this.userService.SendVerifyEmail(email, Tokenn);
+      await this.userService.SendVerifyEmail(newUser._id, Tokenn, email);
 
       return newUser;
     } catch (error: any) {
@@ -129,5 +130,29 @@ export class UsersController {
       throw error;
     }
   }
- 
+  // @Get("/verify")
+  // public async verifyUser(@Query() token: string): Promise<any> {
+  //   try {
+  //     // Find the token in the database
+  //     const tokenDoc = await Token.findOne({ token });
+  //     if (!tokenDoc) {
+  //       throw new Error("Invalid token");
+  //     }
+
+  //     // Update the user's isVerified status
+  //     const user = await Token.findById(tokenDoc.userId);
+  //     if (!user) {
+  //       throw new Error("User not found");
+  //     }
+  //     user.isVerified = true;
+  //     await user.save();
+
+  //     // Delete the token from the database
+  //     await Token.deleteOne({ token });
+
+  //     return { message: "User verified successfully" };
+  //   } catch (err: any) {
+  //     throw new Error(err.message);
+  //   }
+  // }
 }

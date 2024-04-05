@@ -13,7 +13,7 @@
 require("dotenv").config();
 import nodemailer from "nodemailer";
 
-export async function sendVerificationEmail(email: string , token: String) {
+export async function sendVerificationEmail(email: string, token: String) {
   // Create a Nodemailer transporter
   const transporter = nodemailer.createTransport({
     service: "Gmail",

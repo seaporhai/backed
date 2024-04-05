@@ -43,6 +43,48 @@ Route.get("/", async (req: Request, res: Response, _next: NextFunction) => {
   }
 });
 
+Route.get(
+  "/verify",
+  async (req: Request, res: Response, _next: NextFunction) => {
+    const { token } = req.query;
+    // console.log(token);
+    try {
+      const isToken = await Token.findOne({ token });
+
+      if (!isToken) {
+        throw new BaseCustomError(
+          "Verification token is invalid",
+          StatusCode.BadRequest
+        );
+      }
+      console.log(isToken);
+      const userId = isToken.userId;
+      const user = await userModel.findById(userId);
+
+      if (!user) {
+        throw new BaseCustomError("User does not exist.", StatusCode.NotFound);
+      }
+      console.log(user);
+
+      // Mark the user's email as verified
+      user.isVerified = true;
+      await user.save();
+
+      // Remove the verification token
+      await Token.deleteOne({ token });
+
+      return res
+        .status(StatusCode.OK)
+        .json({ message: "User verified successfully" });
+    } catch (error: any) {
+      _next(error);
+      // return res
+      //   .status(StatusCode.InternalServerError)
+      //   .json({ message: error.message });
+    }
+  }
+);
+
 //get one user
 Route.get(
   "/:id",
@@ -78,7 +120,6 @@ Route.post("/", async (req: Request, res: Response, _next: NextFunction) => {
     // Send response with the newly created user
     res.status(201).json({
       message: `Success  Creted user , Hello ${req.body.username} please verify your email to log in  `,
-
     });
   } catch (error) {
     _next(error);
@@ -141,39 +182,5 @@ Route.delete(
 //     }
 //   }
 // );
-Route.get("/verify", async (req: Request, res: Response) => {
-  const { token } = req.query;
-  try {
-    const isToken = await Token.findOne({ token });
 
-    if (!isToken) {
-      throw new BaseCustomError(
-        "Verification token is invalid",
-        StatusCode.BadRequest
-      );
-    }
-
-    const userId = isToken.userId;
-    const user = await userModel.findById(userId);
-
-    if (!user) {
-      throw new BaseCustomError("User does not exist.", StatusCode.NotFound);
-    }
-
-    // Mark the user's email as verified
-    user.isVerified = true;
-    await user.save();
-
-    // Remove the verification token
-    await Token.deleteOne({ token });
-
-    return res
-      .status(StatusCode.OK)
-      .json({ message: "User verified successfully", user });
-  } catch (error: any) {
-    return res
-      .status(StatusCode.InternalServerError)
-      .json({ message: error.message });
-  }
-});
 export { Route };

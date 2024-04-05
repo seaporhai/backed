@@ -41,7 +41,13 @@ export class userRepo {
   }
   //by Id
   async SearchId(id: string) {
-    return await userModel.findById(id);
+    // return await userModel.findById(id);
+      try {
+        return await userModel.findById(id);
+      } catch (error) {
+        throw new BaseCustomError("User does not exist!", StatusCode.NotFound);
+      }
+    
   }
 
   //create
@@ -103,7 +109,14 @@ export class userRepo {
   ///token model
   async createTokenId({ token, userId }: { token: string; userId: string }) {
     try {
-      return Token.create({ userId, token });
+      return (await Token.create({ userId: userId, token: token })).save();
+    } catch (error) {
+      throw error;
+    }
+  }
+  async findToken(token: string) {
+    try {
+      return await Token.findOne({ token: token });
     } catch (error) {
       throw error;
     }
