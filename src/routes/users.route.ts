@@ -13,6 +13,7 @@ import { Token } from "../models/accountverification";
 import { userModel } from "../models/users.model";
 import { generateToken } from "../utils/JWT";
 import { token } from "morgan";
+import { UserService } from "../Service/userService";
 
 const Route: Router = express.Router(); // Set type of Route as Router
 const userController = new UsersController();
@@ -125,6 +126,33 @@ Route.post("/", async (req: Request, res: Response, _next: NextFunction) => {
     _next(error);
   }
 });
+
+Route.post(
+  "/login",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      // const userinput = await userController.login(req.body)
+
+    const user = await userController.login(req.body);
+
+      res.status(StatusCode.OK).json({ message: "Login successful", user });
+    } catch (error) {
+      next(error);
+    }
+    // try {
+    //   // Extract email and password from request body
+    //   const { email, password } = req.body;
+    //   // Call login method in UsersController to authenticate user
+
+    //   // Return token upon successful login
+    //   res.status(StatusCode.OK).json({ message: "Login successful", userinput });
+    // } catch (error) {
+    //   // Pass error to error handling middleware
+    //   next(error);
+    // }
+  }
+);
+
 //update user
 Route.patch(
   "/:id",
@@ -167,20 +195,5 @@ Route.delete(
     }
   }
 );
-// Route.post(
-//   "/",
-//   validateMongooseId,
-//   async (req: Request, res: Response, _next: NextFunction) => {
-//     try {
-//       const userController = new UsersController();
-//       // const token = generateToken();
-//       // const user = await userController.createUser(req.body);
-//       res.json({ message : "Created successfully" });
-//       res.status(StatusCode.OK);
-//     } catch (error) {
-//       _next(error);
-//     }
-//   }
-// );
 
 export { Route };

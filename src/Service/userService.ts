@@ -1,11 +1,17 @@
 import { userRepo } from "../repository/userRepo";
 import { User } from "../types/users";
-import { generateToken, hashedPassword } from "../utils/JWT";
+import {
+  generateToken,
+  generateTokenJWT,
+  hashedPassword,
+  verifyPassword,
+} from "../utils/JWT";
 import { Token } from "../models/accountverification";
 import { ObjectId } from "mongodb";
 import { StatusCode } from "../utils/statuscode";
 import { BaseCustomError } from "../utils/baseCustome";
 import { sendVerificationEmail } from "../utils/sendingVerification";
+import { string } from "zod";
 export class UserService {
   // login(arg0: { username: string; age: number; email: string; password: string; status: string; message: string; }) {
   //   throw new Error("Method not implemented.");
@@ -89,5 +95,42 @@ export class UserService {
     await User.save();
     await this.repo.deleteToken(token);
     return User;
+  }
+
+  async Login(email: string, password: string) {
+    const user = await this.repo.getUserByEmail({ email });
+    console.log({ message: "", user });
+    if (!user) {
+      throw new BaseCustomError(
+        "Invalid Username or Password",
+        StatusCode.NotFound
+      );
+    }
+    if (user.isVerified === false) {
+      throw new BaseCustomError(
+        "This user is not Verify yet , Please Check your Email to Verify!!",
+        StatusCode.NotFound
+      );
+    }
+
+    //   if (!user) {
+    //     throw new BaseCustomError(
+    //       "Invalid username or password",
+    //       StatusCode.NotFound
+    //     );
+    //   }
+
+    //   if (user.isVerified === false) {
+    //     throw new BaseCustomError(
+    //       "That Email is not Verify yet, Please check your mail box and Verify!!",
+    //       StatusCode.NotFound
+    //     );
+    //   }
+
+    //   await verifyPassword(password, user.password);
+
+    //   const token = generateTokenJWT({ id: user.id });
+
+    //   return token;
   }
 }

@@ -41,7 +41,7 @@ export class UsersController {
   constructor() {
     this.userService = new UserService();
   }
-
+  
   // Get users with pagination
   @Get("/")
   public async getUsers(@Queries() query: UserQuery): Promise<any> {
@@ -66,6 +66,17 @@ export class UsersController {
 
       return { users: usersData, paginate: pagination }; // Changed 'user' to 'users' for consistency
     } catch (error: any) {
+      throw error;
+    }
+  }
+  @Post("/login")
+  public async login(@Body() requestBody: { email: string; password: string }) {
+    try {
+      const { email, password } = requestBody; 
+      console.log(email , password) ;
+
+      // return this.userService.Login(email, password);
+    } catch (error) {
       throw error;
     }
   }
@@ -106,6 +117,8 @@ export class UsersController {
     }
   }
 
+
+
   // Update user by their ID
   @Patch("/:id")
   public async updateUser(
@@ -130,6 +143,7 @@ export class UsersController {
       throw error;
     }
   }
+
   // @Get("/verify")
   // public async verifyUser(@Query() token: string): Promise<any> {
   //   try {

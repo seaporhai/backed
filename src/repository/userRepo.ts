@@ -85,12 +85,14 @@ export class userRepo {
 
   async getUserByEmail({ email }: { email: string }) {
     try {
-      const existingUser = await userModel.findOne({ email: email });
+      const existingUser = await userModel.findOne({email});
       return existingUser;
     } catch (error: unknown) {
       throw null;
     }
   }
+
+
   //update
   async updateUser(id: string, user: object) {
     return await userModel.findByIdAndUpdate(id, user, { new: true });
