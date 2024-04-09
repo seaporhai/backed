@@ -4,11 +4,11 @@ import { BaseCustomError } from "../utils/baseCustome";
 import { StatusCode } from "../utils/statuscode";
 import { string } from "zod";
 
-  const tokenSchema = new mongoose.Schema({
-    userId: {
-      type: String,
-      required: true,
-    },
+const tokenSchema = new mongoose.Schema({
+  userId: {
+    type: String,
+    required: true,
+  },
   token: {
     type: String,
     required: true,
@@ -24,9 +24,8 @@ import { string } from "zod";
   },
   expiresAt: {
     type: Date,
-    required: false,
+    default: Date.now,
   },
 });
 
 export const Token = mongoose.model("Token", tokenSchema);
-

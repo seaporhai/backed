@@ -16,7 +16,7 @@ import { BaseCustomError } from "../utils/baseCustome"; // Fixed typo
 import { StatusCode } from "../utils/statuscode";
 import { PaginateType } from "../routes/@types/Paginate";
 import { sendVerificationEmail } from "../utils/sendingVerification";
-import { generateToken, hashedPassword } from "../utils/JWT";
+import { generateToken, generateTokenJWT, hashedPassword } from "../utils/JWT";
 import { string } from "zod";
 import { Token } from "../models/accountverification";
 
@@ -36,12 +36,31 @@ interface UserQuery {
 
 @Route("/users")
 export class UsersController {
+  // static VerifyyyEmail(token: string) {
+  //   throw new Error("Method not implemented.");
+  // }
   private userService: UserService;
 
   constructor() {
     this.userService = new UserService();
   }
   
+
+  @Get("/verify")
+  public async VerifyEmail(@Query() token: string): Promise<{ token: string }> {
+    try {
+      // Verify the email token
+      const user = await this.userService.verifyAccount(token);
+    
+      // Generate JWT for the verified user
+      const jwtToken = await generateTokenJWT({
+        userId: user._id,
+      });
+      return {token : jwtToken} ;
+    } catch (error) {
+      throw error;
+    }
+  }
   // Get users with pagination
   @Get("/")
   public async getUsers(@Queries() query: UserQuery): Promise<any> {
@@ -144,29 +163,5 @@ export class UsersController {
     }
   }
 
-  // @Get("/verify")
-  // public async verifyUser(@Query() token: string): Promise<any> {
-  //   try {
-  //     // Find the token in the database
-  //     const tokenDoc = await Token.findOne({ token });
-  //     if (!tokenDoc) {
-  //       throw new Error("Invalid token");
-  //     }
 
-  //     // Update the user's isVerified status
-  //     const user = await Token.findById(tokenDoc.userId);
-  //     if (!user) {
-  //       throw new Error("User not found");
-  //     }
-  //     user.isVerified = true;
-  //     await user.save();
-
-  //     // Delete the token from the database
-  //     await Token.deleteOne({ token });
-
-  //     return { message: "User verified successfully" };
-  //   } catch (err: any) {
-  //     throw new Error(err.message);
-  //   }
-  // }
 }

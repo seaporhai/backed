@@ -80,23 +80,65 @@ export class UserService {
     }
   }
   async verifyAccount(token: string) {
-    const isTk = await this.repo.findToken(token);
-    if (!isTk) {
-      throw new BaseCustomError(
-        "Verified Token Is inValid",
-        StatusCode.BadRequest
-      );
+    try {
+      // Find token in the repository
+      const tokenInfo = await this.repo.findToken(token);
+  
+      // If token doesn't exist, throw an error
+      if (!tokenInfo) {
+        throw new BaseCustomError(
+          "Verification Token Is Invalid",
+          StatusCode.BadRequest
+        );
+      }
+  
+      // Check token expiration
+      const expirationDate = new Date(tokenInfo.expiresAt);
+      const expirationDurationMinutes = 10; // Set expiration duration to 10 minutes
+      expirationDate.setMinutes(expirationDate.getMinutes() + expirationDurationMinutes);
+      const now = new Date();
+      if (now > expirationDate) {
+        // Token has expired
+        await this.repo.deleteToken(token); // Delete the expired token
+        const user = await this.repo.SearchId(tokenInfo.userId);
+        if (!user) {
+          throw new BaseCustomError("User Not Found", StatusCode.NotFound);
+        }
+        const newToken = generateToken(); // Generate new token
+        const newAccount = new Token({
+          token: newToken,
+          userId: user.id,
+          expiresAt: new Date(Date.now() + expirationDurationMinutes * 60000), // Set new expiration time
+        });
+        await newAccount.save();
+        await sendVerificationEmail(user.id, newToken);
+        throw new BaseCustomError(
+          "Verification token has expired. A new verification email has been sent.",
+          StatusCode.NotFound
+        );
+      }
+  
+      // Token is still valid
+      const user = await this.repo.SearchId(tokenInfo.userId);
+      if (!user) {
+        throw new BaseCustomError("User Not Found", StatusCode.NotFound);
+      }
+  
+      // Update user's verification status
+      user.isVerified = true;
+      await user.save();
+  
+      // Delete the token
+      await this.repo.deleteToken(token);
+  
+      return user;
+    } catch (error) {
+      console.error("Error verifying account:", error);
+      throw error;
     }
-    const User = await this.repo.SearchId(isTk.id);
-    if (!User) {
-      throw new BaseCustomError("Not Found", StatusCode.NotFound);
-    }
-    User.isVerified = true;
-    await User.save();
-    await this.repo.deleteToken(token);
-    return User;
   }
-
+  
+  
   async Login(email: string, password: string) {
     const user = await this.repo.getUserByEmail({ email });
     console.log({ message: "", user });

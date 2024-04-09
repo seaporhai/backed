@@ -10,7 +10,7 @@ export enum StatusCode {
   Found = 302, // Resource has moved temporarily.
 
   // Client Errors
-  BadRequest = 400, // The server cannot process the request due to client error.
+  BadRequest =  400, // The server cannot process the request due to client error.
   Unauthorized = 401, // Authentication is required and has failed or not yet been provided.
   Forbidden = 403, // The request was valid, but the server is refusing action.
   NotFound = 404, // The requested resource could not be found.
