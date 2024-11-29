@@ -4,8 +4,8 @@
 //     from: "seaporhai@gmail.com", // Replace with your sender email
 //     to: email,
 //     subject: "Verify Your Email Address",
-//     // html: `Click on this link to verify your email:  / ${token} `,
-//     html: `Please click <a href="${sendVerificationEmail}">here</a> to verify your email address.`,
+//     html: `Click on this link to verify your email:/ ${token} `,
+//     // html: `Please click ${sendVerificationEmail}to verify your email address.`,
 //   };
 
 //   await nodeMailer.sendMail(mailOptions);

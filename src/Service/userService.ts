@@ -83,7 +83,7 @@ export class UserService {
     try {
       // Find token in the repository
       const tokenInfo = await this.repo.findToken(token);
-  
+
       // If token doesn't exist, throw an error
       if (!tokenInfo) {
         throw new BaseCustomError(
@@ -91,11 +91,13 @@ export class UserService {
           StatusCode.BadRequest
         );
       }
-  
+
       // Check token expiration
       const expirationDate = new Date(tokenInfo.expiresAt);
       const expirationDurationMinutes = 10; // Set expiration duration to 10 minutes
-      expirationDate.setMinutes(expirationDate.getMinutes() + expirationDurationMinutes);
+      expirationDate.setMinutes(
+        expirationDate.getMinutes() + expirationDurationMinutes
+      );
       const now = new Date();
       if (now > expirationDate) {
         // Token has expired
@@ -117,28 +119,27 @@ export class UserService {
           StatusCode.NotFound
         );
       }
-  
+
       // Token is still valid
       const user = await this.repo.SearchId(tokenInfo.userId);
       if (!user) {
         throw new BaseCustomError("User Not Found", StatusCode.NotFound);
       }
-  
+
       // Update user's verification status
       user.isVerified = true;
       await user.save();
-  
+
       // Delete the token
       await this.repo.deleteToken(token);
-  
+
       return user;
     } catch (error) {
       console.error("Error verifying account:", error);
       throw error;
     }
   }
-  
-  
+
   async Login(email: string, password: string) {
     const user = await this.repo.getUserByEmail({ email });
     console.log({ message: "", user });
@@ -155,24 +156,8 @@ export class UserService {
       );
     }
 
-    //   if (!user) {
-    //     throw new BaseCustomError(
-    //       "Invalid username or password",
-    //       StatusCode.NotFound
-    //     );
-    //   }
-
-    //   if (user.isVerified === false) {
-    //     throw new BaseCustomError(
-    //       "That Email is not Verify yet, Please check your mail box and Verify!!",
-    //       StatusCode.NotFound
-    //     );
-    //   }
-
-    //   await verifyPassword(password, user.password);
-
-    //   const token = generateTokenJWT({ id: user.id });
-
-    //   return token;
+    // await verifyPassword(password, user.password);
+    const TOKEN = generateTokenJWT({ id: user.id });
+    return TOKEN;
   }
 }

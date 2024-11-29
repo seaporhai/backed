@@ -5,10 +5,6 @@ import mongoose from "mongoose";
 import connectToDatabase from "../../utils/connecToDb";
 import { StatusCode } from "../../utils/statuscode";
 import { userModel } from "../../models/users.model";
-import exp from "constants";
-import { ExpressTemplateService } from "tsoa";
-import { OK } from "zod";
-
 let mongoServer: MongoMemoryServer;
 
 beforeAll(async () => {

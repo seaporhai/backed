@@ -24,24 +24,15 @@ export function generateToken() {
     return token;
   };
 
-  export const generateTokenJWT = async (payload: object): Promise<string> => {
+  export const generateTokenJWT = async (payload: object) => {
     try {
-      // Ensure process.env.APP_SECRET and process.env.JWT_EXPIRES_IN are defined and have valid values
-      if (!process.env.APP_SECRET || !process.env.JWT_EXPIRES_IN) {
-        throw new Error('Environment variables are not properly configured');
-      }
-  
-      // Generate JWT token with payload
-      const token = await jwt.sign(payload, process.env.APP_SECRET, {
+      return await jwt.sign(payload, process.env.APP_SECRET as string, {
         expiresIn: process.env.JWT_EXPIRES_IN,
       });
-  
-      return token;
     } catch (error) {
-      console.error('Error generating JWT token:', error);
       throw new BaseCustomError(
-        'Unable to generate JWT token',
-        StatusCode.InternalServerError
+        "Unable to generate signature from jwt",
+        StatusCode.BadRequest
       );
     }
   };
